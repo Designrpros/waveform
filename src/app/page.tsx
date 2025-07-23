@@ -528,7 +528,7 @@ const Home: NextPage = () => {
                   <GradientText>Finally.</GradientText>
                 </HeroTitle>
                 <HeroSubtitle>
-                  WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on both iOS, macOS & Vision Pro.
+                  WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on iOS, macOS & Vision Pro.
                 </HeroSubtitle>
                 <ButtonGroup>
                   <AppStoreButton platform="iOS" />
