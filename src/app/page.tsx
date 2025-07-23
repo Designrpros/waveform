@@ -343,17 +343,23 @@ const ShowcaseImage = styled.img`
     border: 1px solid ${({ theme }) => theme.borderColor};
 `;
 
+// Inside your styled components definitions
 const ShowcaseImageMobile = styled.img`
-    position: absolute;
-    bottom: -4rem;
-    right: -2rem;
-    width: 25%;
+    position: absolute; /* Keep absolute positioning for overlap */
+    width: 30%; /* Even further reduced width for mobile overlap (was 40%) */
+    bottom: -2rem; /* Retain smaller vertical offset for mobile overlap */
+    right: -1rem; /* Retain smaller horizontal offset for mobile overlap */
+    height: auto;
     border-radius: 1rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
     border: 1px solid ${({ theme }) => theme.borderColor};
-    display: none;
+    display: block; /* Ensure it's always visible */
+    transition: all 0.3s ease; /* Smooth transition for size and position changes */
+
     @media (min-width: 1024px) {
-        display: block;
+        width: 25%; /* Original size for desktop overlap */
+        bottom: -4rem; /* Original vertical offset for desktop overlap */
+        right: -2rem; /* Original horizontal offset for desktop overlap */
     }
 `;
 
@@ -557,20 +563,19 @@ const Home: NextPage = () => {
                 </FeatureCard>
               </FeatureGrid>
             </Section>
-
             <Section>
               <div style={{ textAlign: 'center' }}>
                   <SectionTitle>Beautiful on Every Device</SectionTitle>
                   <SectionSubtitle>A consistent and delightful experience on iPhone, iPad, and Mac.</SectionSubtitle>
               </div>
               <ShowcaseContainer>
-                  <ShowcaseImage 
-                      src="/assets/Screenshot_macOS.png" 
+                  <ShowcaseImage
+                      src="/assets/Screenshot_macOS.png"
                       alt="WaveForm on macOS"
                       onError={(e) => e.currentTarget.src = 'https://placehold.co/1200x600/111827/FFFFFF?text=macOS+Screenshot+Not+Found'}
                   />
-                  <ShowcaseImageMobile 
-                      src="/assets/Screenshot_iOS.png" 
+                  <ShowcaseImageMobile
+                      src="/assets/Screenshot_iOS.png"
                       alt="WaveForm on iOS"
                       onError={(e) => e.currentTarget.src = 'https://placehold.co/300x600/111827/FFFFFF?text=iOS+Screenshot'}
                   />
