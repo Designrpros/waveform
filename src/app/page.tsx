@@ -522,7 +522,7 @@ const Home: NextPage = () => {
                   <GradientText>Finally.</GradientText>
                 </HeroTitle>
                 <HeroSubtitle>
-                  WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on both iOS and macOS.
+                  WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on both iOS, macOS & Vision Pro.
                 </HeroSubtitle>
                 <ButtonGroup>
                   <AppStoreButton platform="iOS" />
@@ -578,27 +578,47 @@ const Home: NextPage = () => {
             </Section>
 
             <Section id="faq">
-              <FAQContainer>
-                <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                  <SectionTitle>Frequently Asked Questions</SectionTitle>
-                </div>
-                <FAQItem
-                  question="Is WaveForm an official music app?"
-                  answer="No, WaveForm is a third-party client that uses publicly available data to provide a native listening experience. It is not affiliated with any specific music streaming service."
-                />
-                <FAQItem
-                  question="Do I need a premium music subscription?"
-                  answer="While WaveForm can browse content without a subscription, a premium account with the underlying service is recommended for an ad-free and uninterrupted listening experience."
-                />
-                <FAQItem
-                  question="How does iCloud sync work?"
-                  answer="WaveForm uses Core Data with CloudKit to sync your playlists and the list of songs in your library. When you add a song on one device, it appears on your others. Downloaded audio files are device-specific and can be downloaded on each device as needed."
-                />
-                 <FAQItem
-                  question="Is my data private?"
-                  answer="Yes. WaveForm does not have its own servers. All your data is stored locally on your devices and synced securely through your private iCloud account. We never see your listening history or playlists."
-                />
-              </FAQContainer>
+            <FAQContainer>
+              <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+                <SectionTitle>Frequently Asked Questions</SectionTitle>
+              </div>
+              <FAQItem
+                question="What is WaveForm?"
+                answer="WaveForm is a native music player application designed for Apple platforms (iOS, macOS, and visionOS) that provides a tailored listening experience. It offers dynamic waveform visualization, extensive content discovery, and personalized playback features."
+              />
+              <FAQItem
+                question="Is WaveForm an official music app?"
+                answer="No, WaveForm is an independently developed music application focused on providing a personalized and enhanced listening experience."
+              />
+              <FAQItem
+                question="Do I need a premium music subscription?"
+                answer="While WaveForm allows you to explore its music catalog, an active premium account is recommended for an ad-free and uninterrupted listening experience across its full range of available music."
+              />
+              <FAQItem
+                question="How do I find music?"
+                answer="You can find music by using the powerful search bar, exploring trending charts, or Browse top genres and artists within the app's discovery sections."
+              />
+              <FAQItem
+                question="How does iCloud sync work?"
+                answer="WaveForm uses Apple's Core Data with CloudKit to seamlessly sync your playlists and the list of songs in your library across all your Apple devices. Downloaded audio files are device-specific and can be downloaded on each device as needed."
+              />
+              <FAQItem
+                question="Is my data private and secure?"
+                answer="Yes, absolutely. WaveForm does not have its own servers; all your music library data and preferences are stored locally on your devices and synced securely through your private iCloud account. We never see your listening history or playlists. Anonymous analytics data may be collected to help improve the app's functionality and performance."
+              />
+              <FAQItem
+                question="Does WaveForm support multiple platforms?"
+                answer="Yes, WaveForm is available on iOS, macOS, and visionOS, providing a consistent and native music experience across all your Apple devices."
+              />
+              <FAQItem
+                question="What are the main features of WaveForm?"
+                answer="WaveForm offers a comprehensive suite of features including seamless music playback with dynamic waveform visualization, content discovery (trending music, genres, artists, albums, powerful search, and personalized radio stations), and robust library management (My Library, custom playlists, favorites, and offline downloads)."
+              />
+              <FAQItem
+                question="How can I contact you for support or collaboration?"
+                answer="You can reach out via the contact section on my website, Alcatelz.com, or check my CV on Designr.pro for more details."
+              />
+            </FAQContainer>
             </Section>
           </Container>
         </main>
