@@ -56,7 +56,7 @@ const TermsOfServicePage: NextPage = () => {
     <>
       <Head>
         <title>Terms of Service - WaveForm</title>
-        <meta name="description" content="WaveForm's Terms of Service outlining the conditions for using the application." />
+        <meta name="description" content="WaveForm&apos;s Terms of Service outlining the conditions for using the application." />
       </Head>
       <ContentContainer>
         <Title>Terms of Service</Title>
@@ -64,7 +64,7 @@ const TermsOfServicePage: NextPage = () => {
           Last updated: July 24, 2025
         </Paragraph>
         <Paragraph>
-          Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the WaveForm mobile application (the "Service") operated by Vegar Lee Berentsen ("Us", "We", or "Our").
+          Please read these Terms of Service (&quot;Terms&quot;, &quot;Terms of Service&quot;) carefully before using the WaveForm mobile application (the &quot;Service&quot;) operated by Vegar Lee Berentsen (&quot;Us&quot;, &quot;We&quot;, or &quot;Our&quot;).
         </Paragraph>
         <Paragraph>
           Your access to and use of the Service is conditioned on Your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.
@@ -93,7 +93,7 @@ const TermsOfServicePage: NextPage = () => {
 
         <Subtitle>3. Premium Features</Subtitle>
         <Paragraph>
-          WaveForm may offer certain premium features (e.g., offline downloads, unlimited library songs/playlists) available via in-app purchases. These features are subject to additional terms and conditions provided at the time of purchase through Apple's App Store (StoreKit). All payments are processed by Apple, and we do not handle or store your payment information.
+          WaveForm may offer certain premium features (e.g., offline downloads, unlimited library songs/playlists) available via in-app purchases. These features are subject to additional terms and conditions provided at the time of purchase through Apple&apos;s App Store (StoreKit). All payments are processed by Apple, and we do not handle or store your payment information.
         </Paragraph>
 
         <Subtitle>4. Intellectual Property</Subtitle>
@@ -103,7 +103,7 @@ const TermsOfServicePage: NextPage = () => {
 
         <Subtitle>5. Disclaimers</Subtitle>
         <Paragraph>
-          The Service is provided on an "AS IS" and "AS AVAILABLE" basis. The Company makes no warranties, expressed or implied, regarding the operation or availability of the Service, or the information, content, and materials included therein.
+          The Service is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis. The Company makes no warranties, expressed or implied, regarding the operation or availability of the Service, or the information, content, and materials included therein.
         </Paragraph>
         <Paragraph>
           WaveForm does not guarantee the availability or accuracy of content from third-party services. Content may be removed or become unavailable without notice.
@@ -121,7 +121,7 @@ const TermsOfServicePage: NextPage = () => {
 
         <Subtitle>8. Changes to Terms</Subtitle>
         <Paragraph>
-          We reserve the right, at Our sole discretion, to modify or replace these Terms at any time. If a revision is material, We will try to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at Our sole discretion.
+          We reserve the right, at Our sole discretion, to modify or replace these Terms at any time. If a revision is material, We will try to provide at least 30 days&apos; notice prior to any new terms taking effect. What constitutes a material change will be determined at Our sole discretion.
         </Paragraph>
         <Paragraph>
           By continuing to access or use Our Service after those revisions become effective, You agree to be bound by the revised terms. If You do not agree to the new terms, in whole or in part, please stop using the website and the Service.

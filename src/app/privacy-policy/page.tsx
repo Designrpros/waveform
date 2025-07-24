@@ -56,7 +56,7 @@ const PrivacyPolicyPage: NextPage = () => {
     <>
       <Head>
         <title>Privacy Policy - WaveForm</title>
-        <meta name="description" content="WaveForm's Privacy Policy outlining data collection and usage practices." />
+        <meta name="description" content="WaveForm&apos;s Privacy Policy outlining data collection and usage practices." />
       </Head>
       <ContentContainer>
         <Title>Privacy Policy</Title>
@@ -81,7 +81,7 @@ const PrivacyPolicyPage: NextPage = () => {
             <strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named WaveForm.
           </ListItem>
           <ListItem>
-            <strong>Company</strong> (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to WaveForm, operated by Vegar Lee Berentsen.
+            <strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to WaveForm, operated by Vegar Lee Berentsen.
           </ListItem>
           <ListItem>
             <strong>Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.
@@ -116,20 +116,20 @@ const PrivacyPolicyPage: NextPage = () => {
           Usage Data is collected automatically when using the Service.
         </Paragraph>
         <Paragraph>
-          Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data. This data is used solely for the purpose of app improvement and debugging, and is anonymized where possible.
+          Usage Data may include information such as Your Device&apos;s Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data. This data is used solely for the purpose of app improvement and debugging, and is anonymized where possible.
         </Paragraph>
 
         <h3>iCloud Sync</h3>
         <Paragraph>
-          WaveForm leverages Apple's iCloud for seamless synchronization of your music library data (playlists, saved songs metadata) across your Apple devices. This process is handled entirely by Apple's secure infrastructure using end-to-end encryption. We do not have access to the contents of your iCloud data. Downloaded audio files are stored locally on each device and are not synced via iCloud to preserve user storage.
+          WaveForm leverages Apple&apos;s iCloud for seamless synchronization of your music library data (playlists, saved songs metadata) across your Apple devices. This process is handled entirely by Apple&apos;s secure infrastructure using end-to-end encryption. We do not have access to the contents of your iCloud data. Downloaded audio files are stored locally on each device and are not synced via iCloud to preserve user storage.
         </Paragraph>
 
         <Subtitle>Information from Third-Party Services</Subtitle>
         <Paragraph>
-          The Service utilizes content and services provided by YouTube Music. Your interaction with music content (playback, search) is facilitated through YouTube Music's APIs. Please refer to YouTube's (Google's) Privacy Policy for information on how they handle data related to your use of their services.
+          The Service utilizes content and services provided by YouTube Music. Your interaction with music content (playback, search) is facilitated through YouTube Music&apos;s APIs. Please refer to YouTube&apos;s (Google&apos;s) Privacy Policy for information on how they handle data related to your use of their services.
         </Paragraph>
         <Paragraph>
-          Payments for premium features are processed via Apple's App Store (StoreKit). Your payment information and subscription status are managed by Apple. We do not collect or store your payment details.
+          Payments for premium features are processed via Apple&apos;s App Store (StoreKit). Your payment information and subscription status are managed by Apple. We do not collect or store your payment details.
         </Paragraph>
 
         <Subtitle>Use of Your Personal Data</Subtitle>
@@ -142,7 +142,7 @@ const PrivacyPolicyPage: NextPage = () => {
             <strong>To manage Your Account:</strong> to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.
           </ListItem>
           <ListItem>
-            <strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application's push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.
+            <strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application&apos;s push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.
           </ListItem>
           <ListItem>
             <strong>For other purposes</strong>: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.
@@ -155,7 +155,7 @@ const PrivacyPolicyPage: NextPage = () => {
         </Paragraph>
 
         <Subtitle>Disclosure of Your Personal Data</Subtitle>
-        <Paragraph>We do not share your personal data with any third parties, except as required by law or to provide the Service (e.g., through Apple's iCloud and App Store services, and interaction with YouTube Music APIs).</Paragraph>
+        <Paragraph>We do not share your personal data with any third parties, except as required by law or to provide the Service (e.g., through Apple&apos;s iCloud and App Store services, and interaction with YouTube Music APIs).</Paragraph>
 
         <Subtitle>Security of Your Personal Data</Subtitle>
         <Paragraph>

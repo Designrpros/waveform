@@ -2,10 +2,9 @@
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useState, useEffect } from 'react'; // FIX: Add useState and useEffect imports for this component
+import { useState } from 'react'; // FIX: Add useState and useEffect imports for this component
 import styled from 'styled-components'; // Import styled-components without theme definitions or global styles
 import { Play, Music, Cloud, ArrowDownToLine, Radio, ListMusic, Apple, MonitorPlay } from 'lucide-react';
-import Link from 'next/link'; // Import Link for proper Next.js navigation
 
 // --- Styled Components (only those specific to this page) ---
 // (All styled components definitions that were previously in this file should remain here)
