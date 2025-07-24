@@ -2,101 +2,17 @@
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
-import styled, { createGlobalStyle, ThemeProvider, DefaultTheme } from 'styled-components';
-import { Play, Music, Cloud, ArrowDownToLine, Radio, ListMusic, Apple, MonitorPlay, Sun, Moon } from 'lucide-react';
+import { useState, useEffect } from 'react'; // FIX: Add useState and useEffect imports for this component
+import styled from 'styled-components'; // Import styled-components without theme definitions or global styles
+import { Play, Music, Cloud, ArrowDownToLine, Radio, ListMusic, Apple, MonitorPlay } from 'lucide-react';
+import Link from 'next/link'; // Import Link for proper Next.js navigation
 
-// --- Type Definition for Styled Components Theme ---
-declare module 'styled-components' {
-  export interface DefaultTheme {
-    body: string;
-    text: string;
-    subtleText: string;
-    cardBg: string;
-    headerBg: string;
-    borderColor: string;
-    buttonBg: string;
-    buttonHoverBg: string;
-    backgroundImage: string;
-    imageOpacity: string;
-    accentGradient: string;
-  }
-}
-
-// --- Theme Definition ---
-const lightTheme: DefaultTheme = {
-  body: '#f0ecec',
-  text: '#1F2937',
-  subtleText: '#6B7280',
-  cardBg: 'rgba(255, 255, 255, 0.6)',
-  headerBg: 'rgba(240, 236, 236, 0.7)',
-  borderColor: 'rgba(0, 0, 0, 0.1)',
-  buttonBg: 'rgba(0, 0, 0, 0.05)',
-  buttonHoverBg: 'rgba(0, 0, 0, 0.1)',
-  backgroundImage: 'url(/assets/MusicCircleLight.png)',
-  imageOpacity: '1.0',
-  accentGradient: 'linear-gradient(to right, #d45534, #7a2e1a)', // New Red Gradient
-};
-
-const darkTheme: DefaultTheme = {
-  body: '#383434',
-  text: '#F9FAFB',
-  subtleText: '#9CA3AF',
-  cardBg: 'rgba(56, 52, 52, 0.6)',
-  headerBg: 'rgba(56, 52, 52, 0.5)',
-  borderColor: 'rgba(255, 255, 255, 0.1)',
-  buttonBg: 'rgba(255, 255, 255, 0.05)',
-  buttonHoverBg: 'rgba(255, 255, 255, 0.1)',
-  backgroundImage: 'url(/assets/MusicCircle.png)',
-  imageOpacity: '0.2',
-  accentGradient: 'linear-gradient(to right, #d45534, #7a2e1a)', // New Red Gradient
-};
-
-// --- Global Styles ---
-const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: ${({ theme }) => theme.body};
-    color: ${({ theme }) => theme.text};
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-`;
-
-// --- Styled Components ---
-
-const PageWrapper = styled.div`
-  min-height: 100vh;
+// --- Styled Components (only those specific to this page) ---
+// (All styled components definitions that were previously in this file should remain here)
+const Section = styled.section`
+  padding-top: 6rem;
+  padding-bottom: 6rem;
   position: relative;
-  
-  /* Layer 1: MusicCircle background */
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image: ${({ theme }) => theme.backgroundImage};
-    background-size: cover;
-    background-position: center;
-    opacity: ${({ theme }) => theme.imageOpacity};
-    z-index: -2;
-    transition: opacity 0.5s ease;
-  }
-
-  /* Layer 2: DessertTree background, covers the screen */
-  &::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image: url('/assets/DessertTree.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.15;
-    z-index: -1;
-    pointer-events: none;
-  }
 `;
 
 const Container = styled.div`
@@ -108,88 +24,6 @@ const Container = styled.div`
   @media (min-width: 1024px) {
     max-width: 1024px;
   }
-`;
-
-const StyledHeader = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background-color: ${({ theme }) => theme.headerBg};
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid ${({ theme }) => theme.borderColor};
-  transition: background-color 0.3s ease;
-`;
-
-const HeaderContent = styled(Container)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-`;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const LogoImage = styled.img`
-  height: 2.5rem;
-  width: 2.5rem;
-  border-radius: 0.5rem;
-`;
-
-const LogoText = styled.span`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text};
-`;
-
-const HeaderActions = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-`;
-
-const ThemeToggleButton = styled.button`
-    background: ${({ theme }) => theme.buttonBg};
-    border: 1px solid ${({ theme }) => theme.borderColor};
-    color: ${({ theme }) => theme.subtleText};
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: ${({ theme }) => theme.buttonHoverBg};
-        color: ${({ theme }) => theme.text};
-    }
-`;
-
-const DownloadButton = styled.a`
-  border-radius: 9999px;
-  background: ${({ theme }) => theme.accentGradient};
-  padding: 0.5rem 1.5rem;
-  font-weight: 600;
-  color: white;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const Section = styled.section`
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-  position: relative;
 `;
 
 const HeroSection = styled(Section)`
@@ -405,38 +239,6 @@ const FAQChevron = styled.svg<{ $isOpen: boolean }>`
     transform: ${({ $isOpen }) => ($isOpen ? 'rotate(180deg)' : 'rotate(0deg)')};
 `;
 
-const StyledFooter = styled.footer`
-  border-top: 1px solid ${({ theme }) => theme.borderColor};
-`;
-
-const FooterContent = styled(Container)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-  @media (min-width: 640px) {
-    flex-direction: row;
-  }
-`;
-
-const FooterLinks = styled.div`
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1rem;
-    @media (min-width: 640px) {
-        margin-top: 0;
-    }
-`;
-
-const FooterLink = styled.a`
-    transition: color 0.2s;
-    text-decoration: none;
-    color: ${({ theme }) => theme.subtleText};
-    &:hover {
-        color: ${({ theme }) => theme.text};
-    }
-`;
 
 // --- Helper Components ---
 
@@ -459,7 +261,7 @@ const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode; title: 
 );
 
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // useState is used here
   return (
     <StyledFAQItem>
       <FAQButton onClick={() => setIsOpen(!isOpen)}>
@@ -479,166 +281,134 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 
 // --- Main Page Component ---
 const Home: NextPage = () => {
-  const [theme, setTheme] = useState('dark');
-
-  useEffect(() => {
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark' : 'light');
-  }, []);
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
-
-  const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-
+  // Removed ThemeProvider and GlobalStyle, as these are now in ThemeLayoutClient.tsx
+  // The Container here is for page-specific content, not the wrapper.
   return (
-    <ThemeProvider theme={currentTheme}>
-      <GlobalStyle />
+    <>
       <Head>
         <title>WaveForm - Your Music, Your Way</title>
         <meta name="description" content="WaveForm brings your music library to life with offline downloads, iCloud sync, and a seamless native experience on iOS and macOS." />
         <link rel="icon" href="/assets/WaveForm.jpeg" />
       </Head>
       
-      <PageWrapper>
-        <StyledHeader>
-          <HeaderContent>
-            <LogoContainer>
-              <LogoImage src="/assets/WaveForm.jpeg" alt="WaveForm Logo" />
-              <LogoText>WaveForm</LogoText>
-            </LogoContainer>
-            <HeaderActions>
-                <ThemeToggleButton onClick={toggleTheme}>
-                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                </ThemeToggleButton>
-                <DownloadButton href="#">Download</DownloadButton>
-            </HeaderActions>
-          </HeaderContent>
-        </StyledHeader>
+      {/* Content directly inside the main tag provided by ThemeLayoutClient */}
+      <Container>
+        <HeroSection>
+          <HeroBackgroundGlow />
+          <HeroContent>
+            <HeroTitle>
+              Your Music, Your Way.
+              <br />
+              <GradientText>Finally.</GradientText>
+            </HeroTitle>
+            <HeroSubtitle>
+              WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on iOS, macOS & Vision Pro.
+            </HeroSubtitle>
+            <ButtonGroup>
+              <AppStoreButton platform="iOS" />
+              <AppStoreButton platform="macOS" />
+            </ButtonGroup>
+          </HeroContent>
+        </HeroSection>
 
-        <main>
-          <Container>
-            <HeroSection>
-              <HeroBackgroundGlow />
-              <HeroContent>
-                <HeroTitle>
-                  Your Music, Your Way.
-                  <br />
-                  <GradientText>Finally.</GradientText>
-                </HeroTitle>
-                <HeroSubtitle>
-                  WaveForm brings your entire music library to life with offline downloads, iCloud sync, and a seamless native experience on iOS, macOS & Vision Pro.
-                </HeroSubtitle>
-                <ButtonGroup>
-                  <AppStoreButton platform="iOS" />
-                  <AppStoreButton platform="macOS" />
-                </ButtonGroup>
-              </HeroContent>
-            </HeroSection>
+        <Section id="features">
+          <div style={{ textAlign: 'center' }}>
+            <SectionTitle>All The Features You Need</SectionTitle>
+            <SectionSubtitle>Seamlessly integrated for the best listening experience.</SectionSubtitle>
+          </div>
+          <FeatureGrid>
+            <FeatureCard icon={<Music className="h-6 w-6" />} title="A Native Experience">
+              Enjoy a vast library of music in a clean, fast, and native interface. No more web wrappers.
+            </FeatureCard>
+            <FeatureCard icon={<ArrowDownToLine className="h-6 w-6" />} title="Offline Downloads">
+              Save your favorite songs, albums, and playlists directly to your device. Listen anywhere, anytime. (Premium Feature)
+            </FeatureCard>
+            <FeatureCard icon={<Cloud className="h-6 w-6" />} title="iCloud Sync">
+              Your playlists and library are automatically synced across all your Apple devices.
+            </FeatureCard>
+            <FeatureCard icon={<ListMusic className="h-6 w-6" />} title="Advanced Playlist Management">
+              Create and manage your playlists with ease. Add songs from anywhere and organize your library your way. (Limited in Free Version)
+            </FeatureCard>
+            <FeatureCard icon={<Radio className="h-6 w-6" />} title="Start Radio">
+              Discover new music by starting a radio station from any song, artist, or album.
+            </FeatureCard>
+            <FeatureCard icon={<Play className="h-6 w-6" />} title="Background Playback">
+              Full support for background audio and native system media controls on both iOS and macOS.
+            </FeatureCard>
+          </FeatureGrid>
+        </Section>
+        <Section>
+          <div style={{ textAlign: 'center' }}>
+              <SectionTitle>Beautiful on Every Device</SectionTitle>
+              <SectionSubtitle>A consistent and delightful experience on iPhone, iPad, and Mac.</SectionSubtitle>
+          </div>
+          <ShowcaseContainer>
+              <ShowcaseImage
+                  src="/assets/Screenshot_macOS.png"
+                  alt="WaveForm on macOS"
+                  onError={(e) => e.currentTarget.src = 'https://placehold.co/1200x600/111827/FFFFFF?text=macOS+Screenshot+Not+Found'}
+              />
+              <ShowcaseImageMobile
+                  src="/assets/Screenshot_iOS.png"
+                  alt="WaveForm on iOS"
+                  onError={(e) => e.currentTarget.src = 'https://placehold.co/300x600/111827/FFFFFF?text=iOS+Screenshot'}
+              />
+          </ShowcaseContainer>
+        </Section>
 
-            <Section id="features">
-              <div style={{ textAlign: 'center' }}>
-                <SectionTitle>All The Features You Need</SectionTitle>
-                <SectionSubtitle>Seamlessly integrated for the best listening experience.</SectionSubtitle>
-              </div>
-              <FeatureGrid>
-                <FeatureCard icon={<Music className="h-6 w-6" />} title="A Native Experience">
-                  Enjoy a vast library of music in a clean, fast, and native interface. No more web wrappers.
-                </FeatureCard>
-                <FeatureCard icon={<ArrowDownToLine className="h-6 w-6" />} title="Offline Downloads">
-                  Save your favorite songs, albums, and playlists directly to your device. Listen anywhere, anytime.
-                </FeatureCard>
-                <FeatureCard icon={<Cloud className="h-6 w-6" />} title="iCloud Sync">
-                  Your playlists and library are automatically synced across all your Apple devices.
-                </FeatureCard>
-                <FeatureCard icon={<ListMusic className="h-6 w-6" />} title="Advanced Playlist Management">
-                  Create and manage your playlists with ease. Add songs from anywhere and organize your library your way.
-                </FeatureCard>
-                <FeatureCard icon={<Radio className="h-6 w-6" />} title="Start Radio">
-                  Discover new music by starting a radio station from any song, artist, or album.
-                </FeatureCard>
-                <FeatureCard icon={<Play className="h-6 w-6" />} title="Background Playback">
-                  Full support for background audio and native system media controls on both iOS and macOS.
-                </FeatureCard>
-              </FeatureGrid>
-            </Section>
-            <Section>
-              <div style={{ textAlign: 'center' }}>
-                  <SectionTitle>Beautiful on Every Device</SectionTitle>
-                  <SectionSubtitle>A consistent and delightful experience on iPhone, iPad, and Mac.</SectionSubtitle>
-              </div>
-              <ShowcaseContainer>
-                  <ShowcaseImage
-                      src="/assets/Screenshot_macOS.png"
-                      alt="WaveForm on macOS"
-                      onError={(e) => e.currentTarget.src = 'https://placehold.co/1200x600/111827/FFFFFF?text=macOS+Screenshot+Not+Found'}
-                  />
-                  <ShowcaseImageMobile
-                      src="/assets/Screenshot_iOS.png"
-                      alt="WaveForm on iOS"
-                      onError={(e) => e.currentTarget.src = 'https://placehold.co/300x600/111827/FFFFFF?text=iOS+Screenshot'}
-                  />
-              </ShowcaseContainer>
-            </Section>
-
-            <Section id="faq">
-            <FAQContainer>
-              <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <SectionTitle>Frequently Asked Questions</SectionTitle>
-              </div>
-              <FAQItem
-                question="What is WaveForm?"
-                answer="WaveForm is a native music player application designed for Apple platforms (iOS, macOS, and visionOS) that provides a tailored listening experience. It offers dynamic waveform visualization, extensive content discovery, and personalized playback features."
-              />
-              <FAQItem
-                question="Is WaveForm an official music app?"
-                answer="No, WaveForm is an independently developed music application focused on providing a personalized and enhanced listening experience."
-              />
-              <FAQItem
-                question="Do I need a premium music subscription?"
-                answer="While WaveForm allows you to explore its music catalog, an active premium account is recommended for an ad-free and uninterrupted listening experience across its full range of available music."
-              />
-              <FAQItem
-                question="How do I find music?"
-                answer="You can find music by using the powerful search bar, exploring trending charts, or Browse top genres and artists within the app's discovery sections."
-              />
-              <FAQItem
-                question="How does iCloud sync work?"
-                answer="WaveForm uses Apple's Core Data with CloudKit to seamlessly sync your playlists and the list of songs in your library across all your Apple devices. Downloaded audio files are device-specific and can be downloaded on each device as needed."
-              />
-              <FAQItem
-                question="Is my data private and secure?"
-                answer="Yes, absolutely. WaveForm does not have its own servers; all your music library data and preferences are stored locally on your devices and synced securely through your private iCloud account. We never see your listening history or playlists. Anonymous analytics data may be collected to help improve the app's functionality and performance."
-              />
-              <FAQItem
-                question="Does WaveForm support multiple platforms?"
-                answer="Yes, WaveForm is available on iOS, macOS, and visionOS, providing a consistent and native music experience across all your Apple devices."
-              />
-              <FAQItem
-                question="What are the main features of WaveForm?"
-                answer="WaveForm offers a comprehensive suite of features including seamless music playback with dynamic waveform visualization, content discovery (trending music, genres, artists, albums, powerful search, and personalized radio stations), and robust library management (My Library, custom playlists, favorites, and offline downloads)."
-              />
-              <FAQItem
-                question="How can I contact you for support or collaboration?"
-                answer="You can reach out via the contact section on my website, Alcatelz.com, or check my CV on Designr.pro for more details."
-              />
-            </FAQContainer>
-            </Section>
-          </Container>
-        </main>
-
-        <StyledFooter>
-          <FooterContent>
-            <p>&copy; {new Date().getFullYear()} WaveForm. All rights reserved.</p>
-            <FooterLinks>
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
-            </FooterLinks>
-          </FooterContent>
-        </StyledFooter>
-      </PageWrapper>
-    </ThemeProvider>
+        <Section id="faq">
+        <FAQContainer>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <SectionTitle>Frequently Asked Questions</SectionTitle>
+          </div>
+          <FAQItem
+            question="What is WaveForm?"
+            answer="WaveForm is a native music player application designed for Apple platforms (iOS, macOS, and visionOS) that lets you stream and manage music from YouTube Music. It offers dynamic waveform visualization, extensive content discovery, and personalized playback features."
+          />
+          <FAQItem
+            question="Which platforms does WaveForm support?"
+            answer="Yes, WaveForm is designed to provide a consistent and native music experience across iOS, macOS, and visionOS."
+          />
+          <FAQItem
+            question="How do I find new music?"
+            answer="You can discover music through the powerful search bar, exploring trending charts, browse top genres and artists, or create personalized radio stations based on any song within the YouTube Music section of the app."
+          />
+          <FAQItem
+            question="What are WaveForm's core playback features?"
+            answer="WaveForm offers seamless music playback, dynamic waveform visualization, personalized radio stations, and robust library management including custom playlists, favorites, and offline downloads."
+          />
+          <FAQItem
+            question="How do I create and manage my music library and playlists?"
+            answer="You can build your personal music library by adding songs, albums, artists, or playlists to 'My Library.' You can also mark songs as 'Favorites' and organize your downloaded tracks. Note that the free version has limits on the number of songs and custom playlists."
+          />
+          <FAQItem
+            question="Are there any limits on songs or playlists in the free version?"
+            answer="Yes, the free version of WaveForm allows you to add up to 50 songs to 'My Library' and create up to 3 custom playlists. Upgrading to WaveForm Premium unlocks unlimited library songs and playlists."
+          />
+          <FAQItem
+            question="Can I download music for offline listening?"
+            answer="Yes, WaveForm Premium allows you to download your favorite songs for offline playback, ensuring your music is always available, even without an internet connection."
+          />
+          <FAQItem
+            question="How do I upgrade to WaveForm Premium?"
+            answer="You can upgrade to Premium through the 'Premium' section in the app's settings, or by attempting to use a premium-only feature like downloading songs or exceeding free tier limits. The app will guide you through the process."
+          />
+          <FAQItem
+            question="Is my music data secure and how is it backed up?"
+            answer="Absolutely. All your music library data and preferences are stored locally on your device. WaveForm leverages iCloud for secure data backup and seamless syncing across your devices, utilizing end-to-end encryption. WaveForm does not have direct access to your personal music data."
+          />
+          <FAQItem
+            question="What should I do if I encounter an error or 'music service not initialized' message?"
+            answer="First, ensure you have a stable internet connection. Try restarting the app. If the issue persists, ensure your device's date and time are set correctly. This type of message often indicates a temporary connectivity issue or an internal app initialization problem that a restart can resolve. If you continue to experience problems, please contact support."
+          />
+          <FAQItem
+            question="Who developed WaveForm and how can I contact support?"
+            answer="WaveForm was developed by Vegar Lee Berentsen, an indie developer passionate about creating innovative media experiences for Apple users. For support, feedback, or collaboration inquiries, please use the 'Contact Us' button in the Support section of the app's settings, or visit Designr.pro for more details."
+          />
+        </FAQContainer>
+        </Section>
+      </Container>
+    </>
   );
 };
 
