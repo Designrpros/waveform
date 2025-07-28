@@ -3,8 +3,9 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import styled from 'styled-components';
-import Link from 'next/link';
+// Removed unused Link import
 import { UploadCloud, FileText, Users, Lock, BarChart2, Zap } from 'lucide-react'; // New icons for artist features
+import Link from 'next/link'; // Re-added Link as it's used by StyledLinkButton
 
 // --- Reused & Adapted Styled Components for Consistency ---
 const Section = styled.section`
@@ -293,7 +294,7 @@ const ForArtistsPage: NextPage = () => {
               <StepNumber>01</StepNumber>
               <StepTitle>Create Your Account</StepTitle>
               <StepDescription>
-                Sign up for a free WaveForum artist account. It's quick, easy, and your first step towards broader distribution.
+                Sign up for a free WaveForum artist account. It&apos;s quick, easy, and your first step towards broader distribution.
               </StepDescription>
             </StepCard>
             <StepCard>
@@ -307,7 +308,7 @@ const ForArtistsPage: NextPage = () => {
               <StepNumber>03</StepNumber>
               <StepTitle>Choose Your License</StepTitle>
               <StepDescription>
-                Select the licensing terms for each track – Creative Commons for open sharing or proprietary for exclusive control.
+                Select the licensing terms for each track &ndash; Creative Commons for open sharing or proprietary for exclusive control.
               </StepDescription>
             </StepCard>
             <StepCard>

@@ -50,7 +50,7 @@ const HeroBackgroundGlow = styled.div`
 `;
 
 const HeroTitle = styled.h1`
-  font-size: 3.5rem; /* Larger font */
+  font-size: 3.5rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: ${({ theme }) => theme.text};
@@ -319,7 +319,7 @@ const HomePage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Waveform.ink - Your Music Ecosystem | Player & Artist Portal</title>
+        <title>Waveform.ink - Your Music Ecosystem | Player &amp; Artist Portal</title>
         <meta name="description" content="Waveform.ink is your gateway to a unique music experience. Discover independent music with the Waveform app and empower artists with the WaveForum upload portal. Self-hosted content, Creative Commons, and proprietary music, all in one place." />
         <link rel="icon" href="/assets/WaveForm.jpeg" />
       </Head>
@@ -331,14 +331,14 @@ const HomePage: NextPage = () => {
             <HeroTitle>
               The Future of Music
               <br />
-              <GradientText>Discovery & Distribution.</GradientText>
+              <GradientText>Discovery &amp; Distribution.</GradientText>
             </HeroTitle>
             <HeroSubtitle>
               Waveform.ink is building a comprehensive ecosystem for artists and listeners. Discover unique music, empower creators, and control your sound.
             </HeroSubtitle>
             <ButtonGroup>
               <PrimaryButton href="/download">Explore Waveform App</PrimaryButton>
-              <SecondaryButton href="#for-artists">Become an Artist</SecondaryButton>
+              <SecondaryButton href="/for-artists">Become an Artist</SecondaryButton>
             </ButtonGroup>
           </HeroContent>
         </HeroSection>
@@ -349,7 +349,7 @@ const HomePage: NextPage = () => {
             Dive into a curated library of independent artists and Creative Commons masterpieces. Experience music without limits, directly in the Waveform app.
           </SectionSubtitle>
           <FeatureGrid>
-            <FeatureCard icon={<Music size={32} />} title="Vast & Diverse Library">
+            <FeatureCard icon={<Music size={32} />} title="Vast &amp; Diverse Library">
               Access thousands of tracks from independent artists and Creative Commons archives, all legally hosted and served by us.
             </FeatureCard>
             <FeatureCard icon={<Sparkles size={32} />} title="Unique Soundscapes">
@@ -367,7 +367,7 @@ const HomePage: NextPage = () => {
             For artists, WaveForum is your direct portal to distribute music, gain control, and connect with a dedicated audience.
           </SectionSubtitle>
           <FeatureGrid>
-            <FeatureCard icon={<UploadCloud size={32} />} title="Direct Upload & Hosting">
+            <FeatureCard icon={<UploadCloud size={32} />} title="Direct Upload &amp; Hosting">
               Upload your music directly to our platform. We handle the hosting and distribution to Waveform app users.
             </FeatureCard>
             <FeatureCard icon={<Cloud size={32} />} title="Flexible Licensing Options">
@@ -388,7 +388,7 @@ const HomePage: NextPage = () => {
             <PathCard>
               <PathTitle>Path 1: Mainstream Distribution</PathTitle>
               <PathDescription>
-                Our studio's music continues to leverage established platforms like Distrokid for broad reach on Spotify, Apple Music, and YouTube. This ensures wide audience access and established monetization.
+                Our studio&apos;s music continues to leverage established platforms like Distrokid for broad reach on Spotify, Apple Music, and YouTube. This ensures wide audience access and established monetization.
               </PathDescription>
               <PathList>
                 <PathListItem>Broadest audience reach</PathListItem>
@@ -399,18 +399,18 @@ const HomePage: NextPage = () => {
             <PathCard>
               <PathTitle>Path 2: Self-Hosted Creative Commons</PathTitle>
               <PathDescription>
-                Music acquired under Creative Commons licenses (e.g., FMA sourced or studio's own CC releases) is self-hosted. This enables full in-app playback, downloads, and potential user export.
+                Music acquired under Creative Commons licenses (e.g., FMA sourced or studio&apos;s own CC releases) is self-hosted. This enables full in-app playback, downloads, and potential user export.
               </PathDescription>
               <PathList>
-                <PathListItem>Full in-app control & playback</PathListItem>
+                <PathListItem>Full in-app control &amp; playback</PathListItem>
                 <PathListItem>Enhanced discovery for niche content</PathListItem>
-                <PathListItem>Offline access & potential export</PathListItem>
+                <PathListItem>Offline access &amp; potential export</PathListItem>
               </PathList>
             </PathCard>
             <PathCard>
               <PathTitle>Path 3: Self-Hosted Proprietary/Licensed</PathTitle>
               <PathDescription>
-                Our studio's non-CC music and other directly licensed content is self-hosted. This offers exclusive control, in-app playback, and in-app-only downloads, respecting proprietary licenses.
+                Our studio&apos;s non-CC music and other directly licensed content is self-hosted. This offers exclusive control, in-app playback, and in-app-only downloads, respecting proprietary licenses.
               </PathDescription>
               <PathList>
                 <PathListItem>Exclusive content control</PathListItem>

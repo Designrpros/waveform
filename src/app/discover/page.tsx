@@ -4,7 +4,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { Search, Play, Heart, Download, MoreHorizontal, Music, User, Hash, Sparkles, Cloud } from 'lucide-react'; // All icons imported
+import { Search, Play, Heart, Download, MoreHorizontal, Music, User, Hash, Sparkles, Cloud } from 'lucide-react';
 // Import mock data
 import { mockTopGenres, mockTrendingSongs, mockPopularArtists, mockTopAlbums, mockFeaturedSongs } from './mockData';
 
@@ -109,7 +109,6 @@ const FilterButton = styled.button<{ $isActive: boolean }>`
   }
 `;
 
-// This MusicGrid is now for the individual cards within a vertical chunk
 const MusicGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Responsive grid */
@@ -216,7 +215,6 @@ const CategoryTitle = styled(MusicTitle)`
   font-size: 1.1rem;
 `;
 
-// --- Helper Component: FeatureIconWrapper (defined at top level for scope) ---
 const FeatureIconWrapper = styled.div`
   margin-bottom: 1rem;
   display: flex;
@@ -227,11 +225,10 @@ const FeatureIconWrapper = styled.div`
   border-radius: 9999px;
   background: ${({ theme }) => theme.accentGradient};
   color: white;
-  margin-left: auto; /* Center the icon wrapper */
-  margin-right: auto; /* Center the icon wrapper */
+  margin-left: auto;
+  margin-right: auto;
 `;
 
-// --- Helper Component: MusicItemRow (for list views, mimicking SwiftUI's row look) ---
 const MusicItemRowContainer = styled.div`
   display: flex;
   align-items: center;
@@ -284,7 +281,6 @@ const MusicRowActions = styled.div`
   flex-shrink: 0;
 `;
 
-// --- Helper Component: MusicItemRowSkeleton (mimicking SwiftUI's skeleton view) ---
 const MusicItemRowSkeletonContainer = styled.div`
   display: flex;
   align-items: center;
@@ -323,7 +319,6 @@ const SkeletonAction = styled.div`
   flex-shrink: 0;
 `;
 
-// --- Helper Component: YouTubeMusicGenreCard (mimicking SwiftUI's genre card) ---
 const YouTubeMusicGenreCardContainer = styled.div<{ $color: string }>`
   /* Removed fixed width and height */
   background-color: ${({ $color }) => $color};
@@ -362,7 +357,6 @@ interface GenreItem {
     color: string;
 }
 
-// --- Helper Component: MusicItemRow (React version) ---
 const MusicItemRow: React.FC<{ item: MusicItem; onPlay?: () => void; onNavigate?: () => void }> = ({ item, onPlay, onNavigate }) => {
     return (
         <MusicItemRowContainer onClick={onNavigate || onPlay}>
@@ -380,7 +374,6 @@ const MusicItemRow: React.FC<{ item: MusicItem; onPlay?: () => void; onNavigate?
     );
 };
 
-// --- Helper Component: MusicItemRowSkeleton (React version) ---
 const MusicItemRowSkeleton: React.FC = () => {
     return (
         <MusicItemRowSkeletonContainer>
@@ -396,7 +389,6 @@ const MusicItemRowSkeleton: React.FC = () => {
     );
 };
 
-// --- Helper Component: YouTubeMusicGenreCard (React version) ---
 const YouTubeMusicGenreCard: React.FC<{ genre: GenreItem; onNavigate?: () => void }> = ({ genre, onNavigate }) => {
     return (
         <YouTubeMusicGenreCardContainer $color={genre.color} onClick={onNavigate}>
@@ -405,7 +397,6 @@ const YouTubeMusicGenreCard: React.FC<{ genre: GenreItem; onNavigate?: () => voi
     );
 };
 
-// --- New Styled Component: HorizontalScrollContainer ---
 const HorizontalScrollContainer = styled.div`
   display: flex;
   overflow-x: auto; /* Enable horizontal scrolling */
@@ -440,7 +431,6 @@ const HorizontalScrollContainer = styled.div`
   }
 `;
 
-// --- New Styled Component: VerticalChunk ---
 const VerticalChunk = styled.div`
   display: flex;
   flex-direction: column;
@@ -454,7 +444,6 @@ const VerticalChunk = styled.div`
   }
 `;
 
-// --- Utility function to chunk an array ---
 function chunked<T>(array: T[], size: number): T[][] {
   const chunkedArray: T[][] = [];
   for (let i = 0; i < array.length; i += size) {
@@ -464,45 +453,38 @@ function chunked<T>(array: T[], size: number): T[][] {
 }
 
 
-// --- Main Discover Page Component ---
 const DiscoverPage: NextPage = () => {
-  // Access theme object
   const theme = useTheme();
 
-  // --- State Management (Simulating ViewModel) ---
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All'); // 'All', 'Songs', 'Artists', 'Albums', 'Playlists'
+  const [selectedFilter, setSelectedFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Simulated data for home screen sections
   const [topGenres, setTopGenres] = useState<GenreItem[]>([]);
   const [trendingSongs, setTrendingSongs] = useState<MusicItem[]>([]);
   const [popularArtists, setPopularArtists] = useState<MusicItem[]>([]);
-  const [topAlbums, setTopAlbums] = useState<MusicItem[]>([]); // Added topAlbums
+  const [topAlbums, setTopAlbums] = useState<MusicItem[]>([]);
 
-  // Simulated search results
+  // Corrected state declarations for mainArtist and searchResults
   const [searchResults, setSearchResults] = useState<MusicItem[]>([]);
-  const [mainArtist, setMainArtist] = useState<MusicItem | null>(null); // For main artist in search
+  const [mainArtist, setMainArtist] = useState<MusicItem | null>(null);
 
-  // Simulate initial data loading (like youtubeMusicViewModel.loadInitialData)
   useEffect(() => {
     setIsLoading(true);
     setErrorMessage(null);
-    // Simulate API call delay
     const timer = setTimeout(() => {
-      setTopGenres(mockTopGenres); // Use mock data
-      setTrendingSongs(mockTrendingSongs); // Use mock data
-      setPopularArtists(mockPopularArtists); // Use mock data
-      setTopAlbums(mockTopAlbums); // Use mock data
+      setTopGenres(mockTopGenres);
+      setTrendingSongs(mockTrendingSongs);
+      setPopularArtists(mockPopularArtists);
+      setTopAlbums(mockTopAlbums);
       setIsLoading(false);
-    }, 1500); // Simulate network delay
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Simulate search functionality
   useEffect(() => {
-    if (searchQuery.length > 2) { // Only search if query is long enough
+    if (searchQuery.length > 2) {
       setIsLoading(true);
       setErrorMessage(null);
       const timer = setTimeout(() => {
@@ -511,7 +493,7 @@ const DiscoverPage: NextPage = () => {
           ...mockTrendingSongs,
           ...mockPopularArtists,
           ...mockTopAlbums,
-          ...mockFeaturedSongs // Include featured songs in search pool if applicable
+          ...mockFeaturedSongs
         ];
 
         const filteredResults = allMockItems.filter(item =>
@@ -519,7 +501,6 @@ const DiscoverPage: NextPage = () => {
           (item.artist && item.artist.toLowerCase().includes(queryLower))
         );
 
-        // Simulate a "main artist" if search matches an artist directly
         const matchedArtist = mockPopularArtists.find(artist => artist.title.toLowerCase() === queryLower);
         setMainArtist(matchedArtist || null);
 
@@ -535,18 +516,15 @@ const DiscoverPage: NextPage = () => {
       setMainArtist(null);
       setErrorMessage(null);
     }
-  }, [searchQuery, selectedFilter]); // Re-run search when query or filter changes
+  }, [searchQuery, selectedFilter]);
 
   const handlePlaySong = (song: MusicItem) => {
     console.log(`Playing song: ${song.title} by ${song.artist}`);
-    // In a real app, this would trigger audio player logic
   };
 
   const handleNavigateToDetail = (item: MusicItem | GenreItem) => {
     console.log(`Navigating to detail for: ${item.title}`);
-    // In a real app, this would trigger Next.js router.push('/details-page/${item.id}')
   };
-
 
   return (
     <>
@@ -571,7 +549,7 @@ const DiscoverPage: NextPage = () => {
             />
           </SearchBarContainer>
 
-          {searchQuery.length > 0 && ( // Show filter bar only when searching
+          {searchQuery.length > 0 && (
             <FilterTabBar>
               {['All', 'Songs', 'Artists', 'Albums', 'Playlists'].map(filter => (
                 <FilterButton
@@ -586,7 +564,6 @@ const DiscoverPage: NextPage = () => {
           )}
 
           {isLoading ? (
-            // Skeleton view for search results or initial load
             <div style={{ padding: '0 1.5rem' }}>
               {Array.from({ length: 10 }).map((_, index) => (
                 <MusicItemRowSkeleton key={index} />
@@ -597,7 +574,6 @@ const DiscoverPage: NextPage = () => {
               <p>{errorMessage}</p>
             </div>
           ) : searchQuery.length > 0 ? (
-            // Display actual search results
             <div style={{ padding: '0 1.5rem' }}>
               {mainArtist && (
                 <MusicItemRow
@@ -616,19 +592,16 @@ const DiscoverPage: NextPage = () => {
                   />
                 ))
               ) : (
-                // Corrected inline style syntax for theme access
                 <div style={{ textAlign: 'center', color: theme.subtleText, padding: '2rem' }}>
-                  <p>No results found for "{searchQuery}". Try a different search term.</p>
+                  <p>No results found for &quot;{searchQuery}&quot;. Try a different search term.</p>
                 </div>
               )}
             </div>
           ) : (
-            // Home screen content
             <>
               {topGenres.length > 0 && (
                 <SectionTitle style={{ textAlign: 'left', marginTop: '4rem', marginBottom: '2rem' }}>Top Genres</SectionTitle>
               )}
-              {/* Horizontal Scroll for Top Genres */}
               <HorizontalScrollContainer>
                 {topGenres.map(genre => (
                   <YouTubeMusicGenreCard
@@ -642,7 +615,6 @@ const DiscoverPage: NextPage = () => {
               {trendingSongs.length > 0 && (
                 <SectionTitle style={{ textAlign: 'left', marginTop: '4rem', marginBottom: '2rem' }}>Trending Tracks</SectionTitle>
               )}
-              {/* Horizontal Scroll for Trending Songs */}
               <HorizontalScrollContainer>
                 {chunked(trendingSongs, 3).map((songChunk, index) => (
                   <VerticalChunk key={index}>
@@ -661,7 +633,6 @@ const DiscoverPage: NextPage = () => {
               {popularArtists.length > 0 && (
                 <SectionTitle style={{ textAlign: 'left', marginTop: '4rem', marginBottom: '2rem' }}>Popular Artists</SectionTitle>
               )}
-              {/* Horizontal Scroll for Popular Artists */}
               <HorizontalScrollContainer>
                 {chunked(popularArtists, 3).map((artistChunk, index) => (
                   <VerticalChunk key={index}>
@@ -680,7 +651,6 @@ const DiscoverPage: NextPage = () => {
               {topAlbums.length > 0 && (
                 <SectionTitle style={{ textAlign: 'left', marginTop: '4rem', marginBottom: '2rem' }}>Top Albums</SectionTitle>
               )}
-              {/* Horizontal Scroll for Top Albums */}
               <HorizontalScrollContainer>
                 {chunked(topAlbums, 3).map((albumChunk, index) => (
                   <VerticalChunk key={index}>
