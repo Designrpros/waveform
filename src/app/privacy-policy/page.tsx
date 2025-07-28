@@ -55,16 +55,16 @@ const PrivacyPolicyPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Privacy Policy - WaveForm</title>
-        <meta name="description" content="WaveForm&apos;s Privacy Policy outlining data collection and usage practices." />
+        <title>Privacy Policy - Waveform.ink</title>
+        <meta name="description" content="Waveform.ink's Privacy Policy outlining data collection and usage practices across its platform and applications." />
       </Head>
       <ContentContainer>
         <Title>Privacy Policy</Title>
         <Paragraph>
-          Last updated: July 24, 2025
+          Last updated: July 27, 2025
         </Paragraph>
         <Paragraph>
-          This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.
+          This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Waveform.ink platform, including the Waveform mobile application and the WaveForum artist portal (collectively, the &quot;Service&quot;). It also tells You about Your privacy rights and how the law protects You.
         </Paragraph>
         <Paragraph>
           We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.
@@ -78,10 +78,10 @@ const PrivacyPolicyPage: NextPage = () => {
         <Subtitle>Definitions</Subtitle>
         <List>
           <ListItem>
-            <strong>Application</strong> means the software program provided by the Company downloaded by You on any electronic device, named WaveForm.
+            <strong>Application (Waveform App)</strong> means the software program provided by the Company downloaded by You on any electronic device, named Waveform.
           </ListItem>
           <ListItem>
-            <strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to WaveForm, operated by Vegar Lee Berentsen.
+            <strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Studio 51, operating Waveform.ink.
           </ListItem>
           <ListItem>
             <strong>Device</strong> means any device that can access the Service such as a computer, a cellphone or a digital tablet.
@@ -90,7 +90,7 @@ const PrivacyPolicyPage: NextPage = () => {
             <strong>Personal Data</strong> is any information that relates to an identified or identifiable individual.
           </ListItem>
           <ListItem>
-            <strong>Service</strong> refers to the Application.
+            <strong>Service</strong> refers to the Waveform.ink platform, including the Waveform App and the WaveForum portal.
           </ListItem>
           <ListItem>
             <strong>Service Provider</strong> means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service.
@@ -101,6 +101,9 @@ const PrivacyPolicyPage: NextPage = () => {
           <ListItem>
             <strong>You</strong> means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.
           </ListItem>
+          <ListItem>
+            <strong>WaveForum</strong> refers to the web portal where artists can upload and manage their music for distribution through the Waveform.ink platform.
+          </ListItem>
         </List>
 
         <Subtitle>Collecting and Using Your Personal Data</Subtitle>
@@ -108,7 +111,10 @@ const PrivacyPolicyPage: NextPage = () => {
 
         <h3>Personal Data</h3>
         <Paragraph>
-          While using Our Service, We do not collect any personal identifying information directly from You. All your music library data, playlists, and preferences are stored locally on your device.
+          When you create an account on WaveForum or upload content, we may collect personal data such as your name, email address, artist name, and payment information (for any future monetization features). If you interact with features requiring authentication in the Waveform App, this data may be linked to your in-app activity.
+        </Paragraph>
+        <Paragraph>
+          For users of the Waveform App, your music library data, playlists, and preferences are primarily stored locally on your device.
         </Paragraph>
 
         <h3>Usage Data</h3>
@@ -116,20 +122,20 @@ const PrivacyPolicyPage: NextPage = () => {
           Usage Data is collected automatically when using the Service.
         </Paragraph>
         <Paragraph>
-          Usage Data may include information such as Your Device&apos;s Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data. This data is used solely for the purpose of app improvement and debugging, and is anonymized where possible.
+          Usage Data may include information such as Your Device&apos;s Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data. This data is used solely for the purpose of app and platform improvement, debugging, and analytics, and is anonymized where possible.
         </Paragraph>
 
-        <h3>iCloud Sync</h3>
+        <h3>iCloud Sync (for Waveform App users)</h3>
         <Paragraph>
-          WaveForm leverages Apple&apos;s iCloud for seamless synchronization of your music library data (playlists, saved songs metadata) across your Apple devices. This process is handled entirely by Apple&apos;s secure infrastructure using end-to-end encryption. We do not have access to the contents of your iCloud data. Downloaded audio files are stored locally on each device and are not synced via iCloud to preserve user storage.
+          Waveform App leverages Apple&apos;s iCloud for seamless synchronization of your music library data (playlists, saved songs metadata) across your Apple devices. This process is handled entirely by Apple&apos;s secure infrastructure using end-to-end encryption. We do not have access to the contents of your iCloud data. Downloaded audio files are stored locally on each device and are not synced via iCloud to preserve user storage.
         </Paragraph>
 
         <Subtitle>Information from Third-Party Services</Subtitle>
         <Paragraph>
-          The Service utilizes content and services provided by YouTube Music. Your interaction with music content (playback, search) is facilitated through YouTube Music&apos;s APIs. Please refer to YouTube&apos;s (Google&apos;s) Privacy Policy for information on how they handle data related to your use of their services.
+          The Service may integrate with third-party services for specific functionalities (e.g., payment processing, analytics). For content sourced from Creative Commons archives like the Free Music Archive, while we self-host the audio, metadata may originate from these sources. Your interaction with any third-party services linked from or integrated within Waveform.ink is subject to their respective privacy policies.
         </Paragraph>
         <Paragraph>
-          Payments for premium features are processed via Apple&apos;s App Store (StoreKit). Your payment information and subscription status are managed by Apple. We do not collect or store your payment details.
+          Any payments for premium features or artist services will be processed via secure third-party payment gateways. We do not collect or store your sensitive payment details.
         </Paragraph>
 
         <Subtitle>Use of Your Personal Data</Subtitle>
@@ -139,10 +145,13 @@ const PrivacyPolicyPage: NextPage = () => {
             <strong>To provide and maintain our Service</strong>, including to monitor the usage of our Service.
           </ListItem>
           <ListItem>
-            <strong>To manage Your Account:</strong> to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.
+            <strong>To manage Your Account:</strong> to manage Your registration as a user of the Service (e.g., on WaveForum). The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user or artist.
           </ListItem>
           <ListItem>
             <strong>To contact You:</strong> To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application&apos;s push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.
+          </ListItem>
+          <ListItem>
+            <strong>For content management and distribution:</strong> To process and distribute music uploaded by artists through WaveForum, and to display associated metadata in the Waveform App.
           </ListItem>
           <ListItem>
             <strong>For other purposes</strong>: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.
@@ -155,11 +164,11 @@ const PrivacyPolicyPage: NextPage = () => {
         </Paragraph>
 
         <Subtitle>Disclosure of Your Personal Data</Subtitle>
-        <Paragraph>We do not share your personal data with any third parties, except as required by law or to provide the Service (e.g., through Apple&apos;s iCloud and App Store services, and interaction with YouTube Music APIs).</Paragraph>
+        <Paragraph>We do not share your personal data with any third parties, except as required by law or to provide the Service (e.g., through Apple&apos;s iCloud services for the app, and secure payment processors for any transactions).</Paragraph>
 
         <Subtitle>Security of Your Personal Data</Subtitle>
         <Paragraph>
-          The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.
+          The security of Your Personal Data is important to Us. We implement commercially acceptable means to protect Your Personal Data, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use robust security measures, We cannot guarantee its absolute security.
         </Paragraph>
 
         <Subtitle>Changes to this Privacy Policy</Subtitle>

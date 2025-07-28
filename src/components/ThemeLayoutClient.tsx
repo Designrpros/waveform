@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import styled, { createGlobalStyle, ThemeProvider, DefaultTheme } from 'styled-components';
-import { Sun, Moon } from 'lucide-react';
-import Link from 'next/link';
+import { Header } from './Header'; // Import the new Header component
+import { Footer } from './Footer'; // Import the new Footer component
 
 // --- Type Definition for Styled Components Theme ---
 declare module 'styled-components' {
@@ -57,14 +57,13 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* FIX: Ensure these are set by the theme and not overridden by external CSS */
-    background-color: ${({ theme }) => theme.body} !important; /* Added !important for debugging purposes */
-    color: ${({ theme }) => theme.text} !important; /* Added !important for debugging purposes */
+    background-color: ${({ theme }) => theme.body} !important;
+    color: ${({ theme }) => theme.text} !important;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 `;
 
-// --- Styled Components specific to Layout ---
+// --- Styled Components specific to Layout (remaining) ---
 const PageWrapper = styled.div`
   min-height: 100vh;
   position: relative;
@@ -81,142 +80,7 @@ const PageWrapper = styled.div`
     z-index: -2;
     transition: opacity 0.5s ease;
   }
-
-  /* Layer 2: DessertTree background, covers the screen */
-  &::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image: url('/assets/DessertTree.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.15;
-    z-index: -1;
-    pointer-events: none;
-  }
 `;
-
-const Container = styled.div`
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  @media (min-width: 1024px) {
-    max-width: 1024px;
-  }
-`;
-
-const StyledHeader = styled.header`
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background-color: ${({ theme }) => theme.headerBg};
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid ${({ theme }) => theme.borderColor};
-  transition: background-color 0.3s ease;
-`;
-
-const HeaderContent = styled(Container)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-`;
-
-const LogoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const LogoImage = styled.img`
-  height: 2.5rem;
-  width: 2.5rem;
-  border-radius: 0.5rem;
-`;
-
-const LogoText = styled.span`
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text};
-`;
-
-const HeaderActions = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-`;
-
-const ThemeToggleButton = styled.button`
-    background: ${({ theme }) => theme.buttonBg};
-    border: 1px solid ${({ theme }) => theme.borderColor};
-    color: ${({ theme }) => theme.subtleText};
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background: ${({ theme }) => theme.buttonHoverBg};
-        color: ${({ theme }) => theme.text};
-    }
-`;
-
-const DownloadButton = styled(Link)`
-  border-radius: 9999px;
-  background: ${({ theme }) => theme.accentGradient};
-  padding: 0.5rem 1.5rem;
-  font-weight: 600;
-  color: white;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const StyledFooter = styled.footer`
-  border-top: 1px solid ${({ theme }) => theme.borderColor};
-`;
-
-const FooterContent = styled(Container)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-  @media (min-width: 640px) {
-    flex-direction: row;
-  }
-`;
-
-const FooterLinks = styled.div`
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1rem;
-    @media (min-width: 640px) {
-        margin-top: 0;
-    }
-`;
-
-const FooterLink = styled(Link)`
-    transition: color 0.2s;
-    text-decoration: none;
-    color: ${({ theme }) => theme.subtleText};
-    &:hover {
-        color: ${({ theme }) => theme.text};
-    }
-`;
-
 
 interface ThemeLayoutClientProps {
   children: React.ReactNode;
@@ -224,7 +88,7 @@ interface ThemeLayoutClientProps {
 
 export function ThemeLayoutClient({ children }: ThemeLayoutClientProps) {
   // State to manage the current theme
-  const [theme, setTheme] = useState('dark'); 
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark'); 
 
   useEffect(() => {
     // Only access window during client-side rendering
@@ -255,36 +119,13 @@ export function ThemeLayoutClient({ children }: ThemeLayoutClientProps) {
     <ThemeProvider theme={currentTheme}>
       <GlobalStyle /> {/* Applies global styles based on the theme */}
       <PageWrapper>
-        <StyledHeader>
-          <HeaderContent>
-            <LogoContainer>
-              <Link href="/">
-                <LogoImage src="/assets/WaveForm.jpeg" alt="WaveForm Logo" />
-              </Link>
-              <Link href="/">
-                <LogoText>WaveForm</LogoText>
-              </Link>
-            </LogoContainer>
-            <HeaderActions>
-                <ThemeToggleButton onClick={toggleTheme}>
-                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                </ThemeToggleButton>
-                <DownloadButton href="#">Download</DownloadButton> {/* Placeholder, replace with actual app store link */}
-            </HeaderActions>
-          </HeaderContent>
-        </StyledHeader>
+        {/* Render the Header component */}
+        <Header currentThemeName={theme} toggleTheme={toggleTheme} />
         <main>
           {children} {/* This is where your page content will be rendered */}
         </main>
-        <StyledFooter>
-          <FooterContent>
-            <p>&copy; {new Date().getFullYear()} WaveForm. All rights reserved.</p>
-            <FooterLinks>
-              <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
-              <FooterLink href="/terms-of-service">Terms of Service</FooterLink>
-            </FooterLinks>
-          </FooterContent>
-        </StyledFooter>
+        {/* Render the Footer component */}
+        <Footer />
       </PageWrapper>
     </ThemeProvider>
   );

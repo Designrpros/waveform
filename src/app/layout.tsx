@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import StyledComponentsRegistry from "./lib/registry"; // Ensure this path is correct
-import { ThemeLayoutClient } from '../components/ThemeLayoutClient'; // Adjust path if you placed it elsewhere
+import StyledComponentsRegistry from "./lib/registry";
+import { ThemeLayoutClient } from '../components/ThemeLayoutClient';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WaveForm - Your Music, Your Way",
-  description: "WaveForm brings your music library to life with offline downloads, iCloud sync, and a seamless native experience on iOS and macOS.",
+  // UPDATED: Reflects the broader ecosystem of Waveform (player) and WaveForum (artist portal)
+  title: "Waveform.ink - Your Music Ecosystem | Player & Artist Portal",
+  description: "Waveform.ink is your gateway to a unique music experience. Discover independent music with the Waveform app and empower artists with the WaveForum upload portal. Self-hosted content, Creative Commons, and proprietary music, all in one place.",
 };
 
 export default function RootLayout({
