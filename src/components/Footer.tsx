@@ -1,10 +1,11 @@
-"use client"; // This explicitly marks this as a Client Component
+// src/components/Footer.tsx
+"use client";
 
 import React from 'react';
-import styled, { DefaultTheme } from 'styled-components';
+import styled from 'styled-components';
 import Link from 'next/link';
 
-// --- Styled Components specific to Footer ---
+// --- Styled Components (no changes) ---
 const StyledFooter = styled.footer`
   border-top: 1px solid ${({ theme }) => theme.borderColor};
 `;
@@ -55,6 +56,8 @@ export const Footer: React.FC = () => {
       <FooterContent>
         <p>&copy; {new Date().getFullYear()} Waveform.ink. All rights reserved.</p>
         <FooterLinks>
+          {/* *** LINK ADDED HERE *** */}
+          <FooterLink href="/licensing">Licensing</FooterLink> 
           <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
           <FooterLink href="/terms-of-service">Terms of Service</FooterLink>
         </FooterLinks>

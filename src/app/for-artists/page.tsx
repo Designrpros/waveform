@@ -1,3 +1,4 @@
+// src/app/for-artists/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -88,7 +89,8 @@ const ButtonGroup = styled.div`
   }
 `;
 
-const StyledButton = styled.a`
+// Base styled component, now a div
+const StyledButtonBase = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -101,12 +103,13 @@ const StyledButton = styled.a`
   transition: background-color 0.2s;
   text-decoration: none;
   font-weight: 600;
+  cursor: pointer;
   &:hover {
     background-color: ${({ theme }) => theme.buttonHoverBg};
   }
 `;
 
-const PrimaryButton = styled(StyledButton)`
+const PrimaryButton = styled(StyledButtonBase)`
   background: ${({ theme }) => theme.accentGradient};
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -205,7 +208,9 @@ const StepCard = styled(StyledFeatureCard)`
 const StepNumber = styled.div`
   font-size: 2.5rem;
   font-weight: 800;
-  color: ${({ theme }) => theme.accentGradient.replace('linear-gradient(to right, ', '').split(', ')[0]};
+  /* *** THIS IS THE FIX *** */
+  /* Using the safe accentColor property */
+  color: ${({ theme }) => theme.accentColor};
   margin-bottom: 0.5rem;
 `;
 
@@ -252,7 +257,10 @@ const ForArtistsPage: NextPage = () => {
               Your direct portal to distribute music, gain unprecedented control, and connect with a passionate audience.
             </HeroSubtitle>
             <ButtonGroup>
-              <PrimaryButton href="#">Access WaveForum Portal</PrimaryButton> {/* Placeholder for the actual WaveForum upload portal link */}
+              {/* Updated Link usage */}
+              <Link href="#"> {/* Placeholder for the actual WaveForum upload portal link */}
+                <PrimaryButton>Access WaveForum Portal</PrimaryButton>
+              </Link>
             </ButtonGroup>
           </HeroContent>
         </HeroSection>
@@ -311,13 +319,13 @@ const ForArtistsPage: NextPage = () => {
                 Select the licensing terms for each track &ndash; Creative Commons for open sharing or proprietary for exclusive control.
               </StepDescription>
             </StepCard>
-            <StepCard>
+            <StepCard> {/* Corrected closing tag */}
               <StepNumber>04</StepNumber>
               <StepTitle>Review & Publish</StepTitle>
               <StepDescription>
                 Review your submission. Once approved by our team, your music will be live and available for streaming and download in the Waveform app.
               </StepDescription>
-            </StepCard>
+            </StepCard> {/* Corrected closing tag */}
           </HowItWorksGrid>
         </Section>
 
@@ -327,7 +335,10 @@ const ForArtistsPage: NextPage = () => {
             Join the growing community of independent artists on Waveform.ink.
           </SectionSubtitle>
           <ButtonGroup style={{ marginTop: '2rem' }}>
-            <PrimaryButton href="#">Access WaveForum Portal</PrimaryButton> {/* Placeholder for the actual WaveForum upload portal link */}
+            {/* Updated Link usage */}
+            <Link href="#"> {/* Placeholder for the actual WaveForum upload portal link */}
+              <PrimaryButton>Access WaveForum Portal</PrimaryButton>
+            </Link>
           </ButtonGroup>
         </Section>
       </Container>

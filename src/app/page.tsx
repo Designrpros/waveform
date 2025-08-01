@@ -1,10 +1,12 @@
+// src/app/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Music, Cloud, UploadCloud, Users, Sparkles, Globe } from 'lucide-react'; // New icons for conceptual content
+import { Music, Cloud, UploadCloud, Users, Sparkles, Globe, FileText } from 'lucide-react'; // Added FileText import
+import Link from 'next/link'; // Ensure Link is imported
 
 // --- Styled Components (specific to this page) ---
 const Section = styled.section`
@@ -87,7 +89,8 @@ const ButtonGroup = styled.div`
   }
 `;
 
-const StyledButton = styled.a`
+// Base styled component, now a div
+const StyledButtonBase = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -98,14 +101,15 @@ const StyledButton = styled.a`
   padding: 0.75rem 1.25rem;
   color: ${({ theme }) => theme.text};
   transition: background-color 0.2s;
-  text-decoration: none;
+  text-decoration: none; /* Keep for visual consistency, Link's <a> will be external */
   font-weight: 600;
+  cursor: pointer; /* Add cursor pointer as it's not a native <a> by default now */
   &:hover {
     background-color: ${({ theme }) => theme.buttonHoverBg};
   }
 `;
 
-const PrimaryButton = styled(StyledButton)`
+const PrimaryButton = styled(StyledButtonBase)`
   background: ${({ theme }) => theme.accentGradient};
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -115,7 +119,7 @@ const PrimaryButton = styled(StyledButton)`
   }
 `;
 
-const SecondaryButton = styled(StyledButton)`
+const SecondaryButton = styled(StyledButtonBase)`
   background: transparent;
   border-color: ${({ theme }) => theme.borderColor};
   &:hover {
@@ -337,8 +341,13 @@ const HomePage: NextPage = () => {
               Waveform.ink is building a comprehensive ecosystem for artists and listeners. Discover unique music, empower creators, and control your sound.
             </HeroSubtitle>
             <ButtonGroup>
-              <PrimaryButton href="/download">Explore Waveform App</PrimaryButton>
-              <SecondaryButton href="/for-artists">Become an Artist</SecondaryButton>
+              {/* Updated Link usage: Link wraps the styled component, passHref removed, as="a" removed from styled component */}
+              <Link href="/download">
+                <PrimaryButton>Explore Waveform App</PrimaryButton>
+              </Link>
+              <Link href="/for-artists">
+                <SecondaryButton>Become an Artist</SecondaryButton>
+              </Link>
             </ButtonGroup>
           </HeroContent>
         </HeroSection>
@@ -370,8 +379,8 @@ const HomePage: NextPage = () => {
             <FeatureCard icon={<UploadCloud size={32} />} title="Direct Upload &amp; Hosting">
               Upload your music directly to our platform. We handle the hosting and distribution to Waveform app users.
             </FeatureCard>
-            <FeatureCard icon={<Cloud size={32} />} title="Flexible Licensing Options">
-              Choose between Creative Commons for maximum reach or proprietary licensing for exclusive control within our ecosystem.
+            <FeatureCard icon={<FileText size={32} />} title="Flexible Licensing Options">
+              You choose how your music is shared. Opt for Creative Commons licenses or select proprietary licensing for exclusive distribution.
             </FeatureCard>
             <FeatureCard icon={<Users size={32} />} title="Audience Engagement">
               Connect directly with listeners who appreciate independent and diverse music, fostering a loyal fanbase.

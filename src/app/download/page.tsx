@@ -1,3 +1,4 @@
+// src/app/download/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -5,6 +6,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Play, Music, Cloud, ArrowDownToLine, Radio, ListMusic, Apple, MonitorPlay } from 'lucide-react';
+import Link from 'next/link'; // Ensure Link is imported
 
 // --- Styled Components (only those specific to this page) ---
 // (All styled components definitions that were previously in this file should remain here)
@@ -86,7 +88,8 @@ const ButtonGroup = styled.div`
   }
 `;
 
-const StyledAppStoreButton = styled.a`
+// Base styled component, now a div
+const StyledAppStoreButtonBase = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -98,10 +101,16 @@ const StyledAppStoreButton = styled.a`
   color: ${({ theme }) => theme.text};
   transition: background-color 0.2s;
   text-decoration: none;
+  cursor: pointer;
   &:hover {
     background-color: ${({ theme }) => theme.buttonHoverBg};
   }
 `;
+
+const StyledAppStoreButton = styled(StyledAppStoreButtonBase)`
+  /* No additional styles needed here, inherits from base */
+`;
+
 
 const SectionTitle = styled.h2`
   font-size: 2.25rem;
@@ -242,13 +251,15 @@ const FAQChevron = styled.svg<{ $isOpen: boolean }>`
 // --- Helper Components ---
 
 const AppStoreButton = ({ platform }: { platform: 'iOS' | 'macOS' }) => (
-  <StyledAppStoreButton href="#">
-    {platform === 'iOS' ? <Apple className="h-6 w-6" /> : <MonitorPlay className="h-6 w-6" />}
-    <div>
-      <p style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Download on the</p>
-      <p style={{ fontSize: '1.125rem', fontWeight: 600, lineHeight: '1.2' }}>{platform === 'iOS' ? 'App Store' : 'Mac App Store'}</p>
-    </div>
-  </StyledAppStoreButton>
+  <Link href="#"> {/* Removed passHref */}
+    <StyledAppStoreButton> {/* Removed as="a" */}
+      {platform === 'iOS' ? <Apple className="h-6 w-6" /> : <MonitorPlay className="h-6 w-6" />}
+      <div>
+        <p style={{ fontSize: '0.75rem', color: '#9CA3AF' }}>Download on the</p>
+        <p style={{ fontSize: '1.125rem', fontWeight: 600, lineHeight: '1.2' }}>{platform === 'iOS' ? 'App Store' : 'Mac App Store'}</p>
+      </div>
+    </StyledAppStoreButton>
+  </Link>
 );
 
 const FeatureCard = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (

@@ -1,7 +1,7 @@
-// lib/registry.tsx
-"use client";
+// src/app/lib/registry.tsx
+'use client';
 
-import React, { useState } from 'react';
+import React,  { useState } from 'react';
 import { useServerInsertedHTML } from 'next/navigation';
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
 
@@ -10,16 +10,19 @@ export default function StyledComponentsRegistry({
 }: {
   children: React.ReactNode;
 }) {
-  // Only create stylesheet once per rendering pass
+  // Only create stylesheet once with lazy initial state
   const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
 
   useServerInsertedHTML(() => {
     const styles = styledComponentsStyleSheet.getStyleElement();
+    // This is the key modification to prevent a memory leak.
     styledComponentsStyleSheet.instance.clearTag();
     return <>{styles}</>;
   });
 
-  if (typeof window !== 'undefined') return <>{children}</>;
+  if (typeof window !== 'undefined') {
+    return <>{children}</>;
+  }
 
   return (
     <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
