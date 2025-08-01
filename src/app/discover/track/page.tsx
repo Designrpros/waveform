@@ -1,4 +1,3 @@
-// src/app/discover/track/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -7,7 +6,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { SongRow, TrackForQueue } from '../../../components/SongRow';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -56,7 +54,6 @@ const AllTracksPage: NextPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastTrackElementRef = useCallback((node: HTMLDivElement) => {
@@ -88,10 +85,14 @@ const AllTracksPage: NextPage = () => {
         const response = await fetch(`http://51.175.105.40:8080/api/tracks/trending?limit=${PAGE_SIZE}&offset=0`);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data: TrackForQueue[] = await response.json();
-        setTracks(data.map((track: any) => ({ ...track, licensing: 'proprietary' } as TrackForQueue)));
+        setTracks(data.map((track: TrackForQueue) => ({ ...track, licensing: 'proprietary' } as TrackForQueue)));
         setHasMore(data.length === PAGE_SIZE);
-      } catch (err: any) {
-        setError(err.message || 'An unknown error occurred.');
+      } catch (err: unknown) { // Corrected: Catch as unknown
+        if (err instanceof Error) {
+            setError(err.message || 'An unknown error occurred.');
+        } else {
+            setError('An unknown error occurred.');
+        }
       } finally {
         setLoading(false);
       }
@@ -107,10 +108,14 @@ const AllTracksPage: NextPage = () => {
         const response = await fetch(`http://51.175.105.40:8080/api/tracks/trending?limit=${PAGE_SIZE}&offset=${offset}`);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data: TrackForQueue[] = await response.json();
-        setTracks(prevTracks => [...prevTracks, ...data.map((track: any) => ({ ...track, licensing: 'proprietary' } as TrackForQueue))]);
+        setTracks(prevTracks => [...prevTracks, ...data.map((track: TrackForQueue) => ({ ...track, licensing: 'proprietary' } as TrackForQueue))]);
         setHasMore(data.length === PAGE_SIZE);
-      } catch (err: any) {
-        setError(err.message || 'An unknown error occurred.');
+      } catch (err: unknown) { // Corrected: Catch as unknown
+        if (err instanceof Error) {
+            setError(err.message || 'An unknown error occurred.');
+        } else {
+            setError('An unknown error occurred.');
+        }
       } finally {
         setLoading(false);
       }
@@ -139,7 +144,7 @@ const AllTracksPage: NextPage = () => {
           })}
         </TrackList>
         {loading && <Loader>Loading more...</Loader>}
-        {!hasMore && tracks.length > 0 && <Message>You've reached the end!</Message>}
+        {!hasMore && tracks.length > 0 && <Message>You&apos;ve reached the end!</Message>}
       </>
     );
   };

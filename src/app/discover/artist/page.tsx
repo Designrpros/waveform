@@ -1,4 +1,3 @@
-// src/app/discover/artist/page.tsx
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -82,11 +81,15 @@ const AllPopularArtistsPage = () => {
         try {
             const response = await fetch(`http://51.175.105.40:8080/api/artists/popular?limit=${PAGE_SIZE}&offset=0`);
             if (!response.ok) throw new Error(`API error: ${response.status}`);
-            const data = await response.json();
+            const data: ArtistItem[] = await response.json(); // Corrected: Added type
             setArtists(data);
             setHasMore(data.length === PAGE_SIZE);
-        } catch (err: any) {
-            setError(err.message || "Failed to load popular artists.");
+        } catch (err: unknown) { // Corrected: Catch as unknown
+            if (err instanceof Error) {
+                setError(err.message || "Failed to load popular artists.");
+            } else {
+                setError("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }
@@ -101,11 +104,15 @@ const AllPopularArtistsPage = () => {
         try {
             const response = await fetch(`http://51.175.105.40:8080/api/artists/popular?limit=${PAGE_SIZE}&offset=${offset}`);
             if (!response.ok) throw new Error(`API error: ${response.status}`);
-            const data = await response.json();
+            const data: ArtistItem[] = await response.json(); // Corrected: Added type
             setArtists(prev => [...prev, ...data]);
             setHasMore(data.length === PAGE_SIZE);
-        } catch (err: any) {
-            setError(err.message || "Failed to load more artists.");
+        } catch (err: unknown) { // Corrected: Catch as unknown
+             if (err instanceof Error) {
+                setError(err.message || "Failed to load more artists.");
+            } else {
+                setError("An unknown error occurred.");
+            }
         } finally {
             setLoading(false);
         }
@@ -132,7 +139,7 @@ const AllPopularArtistsPage = () => {
         ))}
         {loading && <Loader>Loading more...</Loader>}
       </ArtistGrid>
-      {!hasMore && artists.length > 0 && <Message>You've reached the end!</Message>}
+      {!hasMore && artists.length > 0 && <Message>You&apos;ve reached the end!</Message>}
     </Container>
   );
 };

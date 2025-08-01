@@ -1,4 +1,3 @@
-// src/app/discover/genre/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -9,24 +8,11 @@ import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// --- Helper function to assign colors to genres (reused from discover/page.tsx) ---
+// --- Helper function to assign colors to genres ---
 const genreColors = [
-  '#6495ED', // Cornflower Blue (flat)
-  '#9370DB', // MediumPurple (flat)
-  '#3CB371', // MediumSeaGreen (flat)
-  '#FFA07A', // LightSalmon (flat)
-  '#6A5ACD', // SlateBlue (flat)
-  '#FF6347', // Tomato (flat)
-  '#4682B4', // SteelBlue (flat)
-  '#DA70D6', // Orchid (flat)
-  '#FFD700', // Gold (flat)
-  '#87CEFA', // LightSkyBlue (flat)
-  '#7B68EE', // MediumSlateBlue (flat)
-  '#B0C4DE', // LightSteelBlue (flat)
-  '#FF8C00', // DarkOrange (flat)
-  '#008080', // Teal (flat)
-  '#BDB76B', // DarkKhaki (flat)
-  '#F08080'  // LightCoral (flat)
+  '#6495ED', '#9370DB', '#3CB371', '#FFA07A', '#6A5ACD',
+  '#FF6347', '#4682B4', '#DA70D6', '#FFD700', '#87CEFA',
+  '#7B68EE', '#B0C4DE', '#FF8C00', '#008080', '#BDB76B', '#F08080'
 ];
 
 const generateColor = (genreName: string) => {
@@ -67,7 +53,7 @@ const PageSubtitle = styled.p`
 
 const GenreGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust minmax for desired card size */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 
@@ -141,8 +127,12 @@ const AllGenresPage: NextPage = () => {
         }));
         setGenres(formattedGenres);
         setStatus('success');
-      } catch (error: any) {
-        setErrorMessage(error.message || 'An unknown error occurred.');
+      } catch (error: unknown) { // Corrected: Catch as unknown
+        if (error instanceof Error) {
+            setErrorMessage(error.message || 'An unknown error occurred.');
+        } else {
+            setErrorMessage('An unknown error occurred.');
+        }
         setStatus('error');
       }
     };

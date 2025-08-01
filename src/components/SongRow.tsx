@@ -1,9 +1,8 @@
-// src/components/SongRow.tsx
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
-import { Play, Pause, Heart, MoreHorizontal, Shield, X, Plus, Radio } from 'lucide-react';
+import { Heart, MoreHorizontal, Shield, X, Plus, Radio } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -232,7 +231,8 @@ export const SongRow: React.FC<SongRowProps> = ({ track, queue, isInitiallyLiked
     setIsMoreMenuOpen(false);
   };
 
-  const stopPropagationAnd = (fn: Function) => (e: React.MouseEvent) => {
+  // Corrected: Replaced 'Function' with a specific type '() => void'
+  const stopPropagationAnd = (fn: () => void) => (e: React.MouseEvent) => {
     e.stopPropagation();
     fn();
   };

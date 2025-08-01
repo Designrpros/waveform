@@ -1,44 +1,58 @@
-// src/app/discover/playlists/page.tsx
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Head from 'next/head';
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
 import { PlaylistCard, PublicPlaylist } from '../../../components/PlaylistCard';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 
 // --- Styled Components ---
 const Container = styled.div`
-  max-width: 1024px;
-  margin: 4rem auto;
+  max-width: 1200px;
+  margin: 2rem auto;
   padding: 2rem;
-  color: ${({ theme }) => theme.text};
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-    margin: 2rem auto;
-  }
 `;
 
-const PageHeader = styled.div`
-  text-align: center;
-  margin-bottom: 3rem;
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 `;
 
 const PageTitle = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
+  color: ${({ theme }) => theme.text};
+`;
 
-  @media (max-width: 768px) {
-    font-size: 2rem;
+const SearchInput = styled.input`
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid ${({ theme }) => theme.borderColor};
+  background-color: ${({ theme }) => theme.buttonBg};
+  color: ${({ theme }) => theme.text};
+  font-size: 1rem;
+  width: 300px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.accentColor};
+    background-color: ${({ theme }) => theme.cardBg};
   }
 `;
 
-const PageSubtitle = styled.p`
-  font-size: 1.1rem;
+const PlaylistGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+`;
+
+const Message = styled.p`
+  text-align: center;
   color: ${({ theme }) => theme.subtleText};
+  margin-top: 4rem;
 `;
 
 const BackButton = styled(Link)`
@@ -55,133 +69,66 @@ const BackButton = styled(Link)`
   }
 `;
 
-const PlaylistGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-`;
-
-const Message = styled.p`
-  text-align: center;
-  color: ${({ theme }) => theme.subtleText};
-  margin-top: 2rem;
-  padding: 2rem;
-  background-color: ${({ theme }) => theme.cardBg};
-  border: 1px solid ${({ theme }) => theme.borderColor};
-  border-radius: 8px;
-`;
-
-const Loader = styled.div`
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem;
-`;
-
-const PAGE_SIZE = 20;
-
-const AllFeaturedPlaylistsPage = () => {
+const AllPlaylistsPage = () => {
   const [playlists, setPlaylists] = useState<PublicPlaylist[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastPlaylistElementRef = useCallback((node: HTMLAnchorElement | null) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setOffset(prevOffset => prevOffset + PAGE_SIZE);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchPlaylists = async () => {
       setLoading(true);
-      setError(null);
       try {
-        const response = await fetch(`http://51.175.105.40:8080/api/playlists/curated?limit=${PAGE_SIZE}&offset=0`);
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        const data = await response.json();
+        const response = await fetch('http://51.175.105.40:8080/api/playlists/curated');
+        if (!response.ok) {
+          throw new Error('Failed to fetch playlists');
+        }
+        const data: PublicPlaylist[] = await response.json(); // Corrected: Add type for data
         setPlaylists(data);
-        setHasMore(data.length === PAGE_SIZE);
-      } catch (err: any) {
-        setError(err.message || "Failed to load featured playlists.");
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
-    fetchInitialData();
+    fetchPlaylists();
   }, []);
 
-  useEffect(() => {
-    if (offset === 0) return; // Don't fetch on initial load
-    const loadMorePlaylists = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`http://51.175.105.40:8080/api/playlists/curated?limit=${PAGE_SIZE}&offset=${offset}`);
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-        const data = await response.json();
-        setPlaylists(prev => [...prev, ...data]);
-        setHasMore(data.length === PAGE_SIZE);
-      } catch (err: any) {
-        setError(err.message || "Failed to load more playlists.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadMorePlaylists();
-  }, [offset]);
-
-  const renderContent = () => {
-    if (playlists.length === 0 && loading) {
-      return <Message>Loading playlists...</Message>;
-    }
-    if (error) {
-      return <Message>Error: {error}</Message>;
-    }
-    if (playlists.length === 0) {
-      return <Message>No featured playlists found.</Message>;
-    }
-
-    return (
-      <PlaylistGrid>
-        {playlists.map((playlist, index) => (
-          <PlaylistCard
-            key={playlist.id}
-            playlist={playlist}
-            ref={playlists.length === index + 1 ? lastPlaylistElementRef : null}
-            isDiscovery={true}
-          />
-        ))}
-        {loading && offset > 0 && <Loader>Loading more...</Loader>}
-      </PlaylistGrid>
-    );
-  };
+  const filteredPlaylists = playlists.filter((playlist: PublicPlaylist) => // Corrected: Add type for playlist
+    playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Container>
-      <Head>
-        <title>Featured Playlists - Waveform</title>
-        <meta name="description" content="Discover featured and curated playlists on Waveform." />
-      </Head>
       <BackButton href="/discover">
         <ChevronLeft size={20} /> Back to Discover
       </BackButton>
-      <PageHeader>
+      <Header>
         <PageTitle>Featured Playlists</PageTitle>
-        <PageSubtitle>Discover playlists curated by the Waveform team.</PageSubtitle>
-      </PageHeader>
-      
-      {renderContent()}
-
-      {!hasMore && playlists.length > 0 && <Message>You've reached the end!</Message>}
+        <SearchInput
+          type="text"
+          placeholder="Search playlists..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </Header>
+      {loading ? (
+        <Message>Loading playlists...</Message>
+      ) : filteredPlaylists.length > 0 ? (
+        <PlaylistGrid>
+          {filteredPlaylists.map((playlist: PublicPlaylist) => ( // Corrected: Add type for playlist
+            <PlaylistCard
+              key={playlist.id}
+              playlist={playlist}
+              isDiscovery={true}
+            />
+          ))}
+        </PlaylistGrid>
+      ) : (
+        // Corrected: Escaped apostrophe
+        <Message>There are no featured playlists right now. Check back soon!</Message>
+      )}
     </Container>
   );
 };
 
-export default AllFeaturedPlaylistsPage;
+export default AllPlaylistsPage;

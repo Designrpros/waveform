@@ -1,13 +1,12 @@
-// src/app/library/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { Heart, ListMusic, PlusCircle, User } from 'lucide-react';
+import { Heart, ListMusic, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Modal } from '../../components/Modal';
 
@@ -95,9 +94,9 @@ const LibraryPage: NextPage = () => {
   const [fetchStatus, setFetchStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
-  const [isPublicPlaylist, setIsPublicPlaylist] = useState(false); // <-- NEW
+  const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
 
-  const fetchLibraryData = async () => {
+  const fetchLibraryData = useCallback(async () => {
     if (!user) return;
     setFetchStatus('loading');
     try {
@@ -120,13 +119,13 @@ const LibraryPage: NextPage = () => {
       console.error(error);
       setFetchStatus('error');
     }
-  };
+  }, [user]);
   
   useEffect(() => {
     if (loading) return;
     if (!user) { router.push('/login'); return; }
     fetchLibraryData();
-  }, [user, loading, router]);
+  }, [user, loading, router, fetchLibraryData]);
   
   const handleCreatePlaylist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,13 +135,13 @@ const LibraryPage: NextPage = () => {
         const response = await fetch('http://51.175.105.40:8080/api/playlists', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${idToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: newPlaylistName, isPublic: isPublicPlaylist }), // <-- SEND isPublic
+            body: JSON.stringify({ name: newPlaylistName, isPublic: isPublicPlaylist }),
         });
         if (!response.ok) throw new Error('Failed to create playlist.');
         setNewPlaylistName('');
-        setIsPublicPlaylist(false); // Reset checkbox
+        setIsPublicPlaylist(false);
         setIsCreateModalOpen(false);
-        fetchLibraryData();
+        await fetchLibraryData(); // Use await to ensure data is fresh
     } catch (error) {
         alert('Error creating playlist. Please try again.');
         console.error(error);
@@ -170,7 +169,7 @@ const LibraryPage: NextPage = () => {
               </LibraryLinkCard>
               {playlists.map(playlist => (
                 <LibraryLinkCard key={playlist.id} href={`/library/playlist/${playlist.id}`}>
-                  {playlist.artwork ? <PlaylistArtwork src={playlist.artwork} /> : <CardIcon><ListMusic size={48} /></CardIcon>}
+                  {playlist.artwork ? <PlaylistArtwork src={playlist.artwork} alt={playlist.name} /> : <CardIcon><ListMusic size={48} /></CardIcon>}
                   <CardTitle>{playlist.name}</CardTitle>
                 </LibraryLinkCard>
               ))}
@@ -185,7 +184,7 @@ const LibraryPage: NextPage = () => {
                 <GridContainer>
                     {followedArtists.map(artist => (
                         <LibraryLinkCard key={artist.id} href={`/discover/artist/${artist.id}`}>
-                            <ArtistArtwork src={artist.artwork} />
+                            <ArtistArtwork src={artist.artwork} alt={artist.name} />
                             <CardTitle>{artist.name}</CardTitle>
                         </LibraryLinkCard>
                     ))}

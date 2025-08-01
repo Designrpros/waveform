@@ -1,4 +1,3 @@
-// src/app/login/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -6,7 +5,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'; // NEW: Import createUserWithEmailAndPassword
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 
@@ -71,12 +70,11 @@ const LoginPage: NextPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [isRegistering, setIsRegistering] = useState(false); // NEW: State to toggle between login/register
+  const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
   const auth = getAuth(app);
 
   useEffect(() => {
-    // If user is already logged in, redirect them from the login page
     if (user) {
       router.push('/discover');
     }
@@ -89,17 +87,34 @@ const LoginPage: NextPage = () => {
       if (isRegistering) {
         await createUserWithEmailAndPassword(auth, email, password);
         alert('Registration successful! Please log in with your new account.');
-        setIsRegistering(false); // Switch to login view after successful registration
+        setIsRegistering(false);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         router.push('/discover');
       }
-    } catch (firebaseError: any) {
-      if (isRegistering) {
-        setError('Registration failed. Please check your email and password format.');
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
+    } catch (err: unknown) { // Corrected: Catch as unknown for type safety
+        let errorMessage = 'An unexpected error occurred. Please try again.';
+        // Type guard to check if the error is a Firebase error with a code
+        if (typeof err === 'object' && err !== null && 'code' in err) {
+            const firebaseError = err as { code: string };
+            switch (firebaseError.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'This email is already registered.';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = 'Password should be at least 6 characters.';
+                    break;
+                case 'auth/user-not-found':
+                case 'auth/wrong-password':
+                case 'auth/invalid-credential':
+                    errorMessage = 'Invalid email or password. Please try again.';
+                    break;
+                default:
+                    errorMessage = 'An authentication error occurred. Please try again later.';
+                    break;
+            }
+        }
+        setError(errorMessage);
     }
   };
 

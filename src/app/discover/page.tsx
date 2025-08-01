@@ -1,9 +1,8 @@
-// waveform/src/app/discover/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Search, ChevronRight, X as XIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -131,6 +130,9 @@ interface SearchResults {
   artists: MusicItem[];
   playlists: PublicPlaylist[];
 }
+// Corrected: Use a 'type' alias instead of an empty interface
+type TrackFromApi = Omit<TrackForQueue, 'licensing'>;
+
 
 // --- Helper Components ---
 const MusicItemRow: React.FC<{ item: MusicItem; type: 'album' | 'artist' | 'playlist' }> = ({ item, type }) => {
@@ -198,7 +200,7 @@ const DiscoverPage: NextPage = () => {
         ]);
         setTopAlbums(albums);
         setPopularArtists(artists);
-        const formattedTracks = tracks.map((track: any) => ({ ...track, licensing: 'proprietary' }));
+        const formattedTracks = tracks.map((track: TrackFromApi) => ({ ...track, licensing: 'proprietary' as const }));
         setTrendingSongs(formattedTracks);
         const formattedGenres = genres.map((genre: { id: number; name: string }) => ({ ...genre, color: generateColor(genre.name) }));
         setTopGenres(formattedGenres);
@@ -218,8 +220,12 @@ const DiscoverPage: NextPage = () => {
         }
 
         setStatus('success');
-      } catch (error: any) {
-        setErrorMessage(error.message || 'An unknown error occurred.');
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+            setErrorMessage(error.message || 'An unknown error occurred.');
+        } else {
+            setErrorMessage('An unknown error occurred.');
+        }
         setStatus('error');
       }
     };
@@ -266,7 +272,7 @@ const DiscoverPage: NextPage = () => {
         {playlists.length > 0 && (
           <SearchResultCategory>
             <SearchResultTitle>Playlists</SearchResultTitle>
-            {playlists.map(item => <MusicItemRow key={item.id} item={item as any} type="playlist" />)}
+            {playlists.map(item => <MusicItemRow key={item.id} item={item as MusicItem} type="playlist" />)}
           </SearchResultCategory>
         )}
         {tracks.length > 0 && (

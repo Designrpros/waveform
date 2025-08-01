@@ -1,10 +1,9 @@
-// src/context/PlayerContext.tsx
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 
 // --- Interfaces ---
-export interface Track { // <-- EXPORTED INTERFACE
+export interface Track {
   id: string;
   title: string;
   artist?: string;
@@ -36,12 +35,18 @@ interface PlayerContextType {
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
+// Define a type for the window object to include the vendor-prefixed AudioContext
+interface WindowWithAudioContext extends Window {
+  webkitAudioContext: typeof AudioContext;
+}
+
 // --- Web Audio API Helper ---
 const analyzeAudio = async (audioPath: string): Promise<number[]> => {
   try {
     if (typeof window === 'undefined') return Array(200).fill(0.1);
     
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    // Corrected: Cast to 'unknown' first for type safety
+    const audioContext = new (window.AudioContext || (window as unknown as WindowWithAudioContext).webkitAudioContext)();
     const response = await fetch(audioPath);
     const arrayBuffer = await response.arrayBuffer();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
@@ -87,7 +92,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     if (queue.length === 0) return;
     if (repeatMode === 'one' && audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play();
+      audioRef.current.play().catch(console.error);
       return;
     }
     const currentPlaybackQueue = isShuffling ? shuffledQueue : queue;
@@ -164,7 +169,8 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     }
     setCurrentTrack(track);
     try {
-        fetch(`http://51.175.105.40:8080/api/track/${track.id}/play`, { method: 'POST' });
+        // Corrected: Use 'void' to indicate the promise is intentionally not awaited
+        void fetch(`http://51.175.105.40:8080/api/track/${track.id}/play`, { method: 'POST' });
     } catch (error) { console.warn("Could not update play count:", error); }
   }, [isShuffling]);
 

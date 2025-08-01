@@ -1,9 +1,9 @@
 // src/components/GlobalPlayer.tsx
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled, { keyframes, useTheme } from 'styled-components';
-import { usePlayer, RepeatMode, Track } from '../context/PlayerContext';
+import { usePlayer, RepeatMode } from '../context/PlayerContext';
 import { Play, Pause, SkipBack, SkipForward, ChevronDown, Shuffle, Repeat, Repeat1, Mic, ListMusic, Radio } from 'lucide-react';
 
 // --- Helper Functions ---

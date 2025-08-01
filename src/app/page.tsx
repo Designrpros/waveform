@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Music, Cloud, UploadCloud, Users, Sparkles, Globe, FileText } from 'lucide-react'; // Added FileText import
+import { Music, UploadCloud, Users, Sparkles, Globe, FileText } from 'lucide-react'; // Added FileText import
 import Link from 'next/link'; // Ensure Link is imported
 
 // --- Styled Components (specific to this page) ---

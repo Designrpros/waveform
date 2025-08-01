@@ -1,4 +1,3 @@
-// src/app/library/likes/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -72,7 +71,8 @@ const LikedSongsPage: NextPage = () => {
   const renderContent = () => {
     if (fetchStatus === 'loading' || loading) return <Message>Loading your liked songs...</Message>;
     if (fetchStatus === 'error') return <Message>Could not load liked tracks. Please try again.</Message>;
-    if (likedTracks.length === 0) return <Message>You haven't liked any tracks yet.</Message>;
+    // Corrected: Escaped apostrophe
+    if (likedTracks.length === 0) return <Message>You haven&apos;t liked any tracks yet.</Message>;
     
     return (
       <TrackListContainer>

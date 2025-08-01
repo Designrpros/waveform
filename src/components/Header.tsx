@@ -1,9 +1,9 @@
 // src/components/Header.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Sun, Moon, Library } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { getAuth, signOut } from 'firebase/auth';
