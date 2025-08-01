@@ -15,7 +15,7 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
     value: "waveform-d0bf6"
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: "waveform-d0bf6.appspot.com" # Using the standard .appspot.com domain
+    value: "waveform-d0bf6.firebasestorage.app" # Using the standard .appspot.com domain
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
     value: "674358758887"
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
