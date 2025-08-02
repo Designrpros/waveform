@@ -189,7 +189,7 @@ const DiscoverPage: NextPage = () => {
     const fetchData = async () => {
       setStatus('loading');
       try {
-        const API_BASE_URL = 'http://51.175.105.40:8080/api';
+        const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
         const [albums, artists, tracks, genres, publicPl, curatedPl] = await Promise.all([
           safeFetch(`${API_BASE_URL}/albums/top`, 'Top Albums'),
           safeFetch(`${API_BASE_URL}/artists/popular`, 'Popular Artists'),
@@ -241,7 +241,7 @@ const DiscoverPage: NextPage = () => {
     setIsSearching(true);
     const debounceTimer = setTimeout(async () => {
       try {
-        const API_BASE_URL = 'http://51.175.105.40:8080/api';
+        const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
         const data = await safeFetch(`${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`, 'Search');
         setSearchResults(data);
       } catch (error) {

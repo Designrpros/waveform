@@ -77,8 +77,8 @@ const PlaylistDetailPage = () => {
         }
 
         const [playlistResponse, likesResponse] = await Promise.all([
-            fetch(`http://51.175.105.40:8080/api/playlists/${playlistId}`, requestOptions),
-            user ? fetch('http://51.175.105.40:8080/api/me/likes/tracks', requestOptions) : Promise.resolve(null)
+            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`, requestOptions),
+            user ? fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, requestOptions) : Promise.resolve(null)
         ]);
         
         if (!playlistResponse.ok) {

@@ -100,7 +100,7 @@ const AlbumPage = () => {
 
       try {
         // Fetch album details
-        const response = await fetch(`http://51.175.105.40:8080/api/album/${albumId}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/album/${albumId}`);
         if (!response.ok) throw new Error(`Album API error: ${response.status}`);
         const data: Album = await response.json();
         setAlbum(data);
@@ -120,7 +120,7 @@ const AlbumPage = () => {
         // If user is logged in, fetch their liked tracks
         if (user) {
           const idToken = await user.getIdToken();
-          const likesResponse = await fetch('http://51.175.105.40:8080/api/me/likes/tracks', {
+          const likesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
             headers: { 'Authorization': `Bearer ${idToken}` }
           });
           if (likesResponse.ok) {

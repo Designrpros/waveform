@@ -48,7 +48,7 @@ export const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({ track, i
         setStatus('loading');
         try {
           const idToken = await user.getIdToken();
-          const response = await fetch('http://51.175.105.40:8080/api/playlists', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, {
             headers: { 'Authorization': `Bearer ${idToken}` }
           });
           if (!response.ok) throw new Error('Failed to fetch playlists.');
@@ -68,7 +68,7 @@ export const AddToPlaylistModal: React.FC<AddToPlaylistModalProps> = ({ track, i
     if (!user) return;
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`http://51.175.105.40:8080/api/playlists/${playlistId}/tracks`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}/tracks`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,

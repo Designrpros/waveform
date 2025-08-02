@@ -120,7 +120,7 @@ const TrackDetailPage = () => {
     const fetchTrackData = async () => {
       if (!trackId) return;
       setLoading(true);
-      const API_BASE_URL = 'http://51.175.105.40:8080/api';
+      const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
 
       try {
         const response = await fetch(`${API_BASE_URL}/track/${trackId}`);

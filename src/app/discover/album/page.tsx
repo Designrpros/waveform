@@ -86,7 +86,7 @@ const AllAlbumsPage = () => {
     const fetchAlbums = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://51.175.105.40:8080/api/albums/all');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}`);
         if (!response.ok) {
           throw new Error('Failed to fetch albums');
         }

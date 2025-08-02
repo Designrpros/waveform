@@ -170,13 +170,13 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     setCurrentTrack(track);
     try {
         // Corrected: Use 'void' to indicate the promise is intentionally not awaited
-        void fetch(`http://51.175.105.40:8080/api/track/${track.id}/play`, { method: 'POST' });
+        void fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/track/${track.id}/play`, { method: 'POST' });
     } catch (error) { console.warn("Could not update play count:", error); }
   }, [isShuffling]);
 
   const startRadioFromTrack = useCallback(async (track: Track) => {
     try {
-      const response = await fetch(`http://51.175.105.40:8080/api/radio/start/${track.id}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/radio/start/${track.id}`);
       if (!response.ok) throw new Error('Failed to fetch radio queue.');
       const radioQueue: Track[] = await response.json();
       const newQueue = [track, ...radioQueue];

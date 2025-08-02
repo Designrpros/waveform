@@ -53,7 +53,7 @@ const LikedSongsPage: NextPage = () => {
       setFetchStatus('loading');
       try {
         const idToken = await user.getIdToken();
-        const response = await fetch('http://51.175.105.40:8080/api/me/likes/tracks', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
           headers: { 'Authorization': `Bearer ${idToken}` }
         });
         if (!response.ok) throw new Error('Failed to fetch liked tracks.');

@@ -117,7 +117,7 @@ const AllGenresPage: NextPage = () => {
     const fetchAllGenres = async () => {
       setStatus('loading');
       try {
-        const response = await fetch(`http://51.175.105.40:8080/api/genres`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/genres`);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data: { id: number; name: string }[] = await response.json();
         

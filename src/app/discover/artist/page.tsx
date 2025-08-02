@@ -79,7 +79,7 @@ const AllPopularArtistsPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`http://51.175.105.40:8080/api/artists/popular?limit=${PAGE_SIZE}&offset=0`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/popular?limit=${PAGE_SIZE}&offset=0`);
             if (!response.ok) throw new Error(`API error: ${response.status}`);
             const data: ArtistItem[] = await response.json(); // Corrected: Added type
             setArtists(data);
@@ -102,7 +102,7 @@ const AllPopularArtistsPage = () => {
     const loadMoreArtists = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://51.175.105.40:8080/api/artists/popular?limit=${PAGE_SIZE}&offset=${offset}`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/artists/popular?limit=${PAGE_SIZE}&offset=${offset}`);
             if (!response.ok) throw new Error(`API error: ${response.status}`);
             const data: ArtistItem[] = await response.json(); // Corrected: Added type
             setArtists(prev => [...prev, ...data]);

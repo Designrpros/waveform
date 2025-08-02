@@ -74,7 +74,7 @@ const AllTracksPage: NextPage = () => {
       try {
         if (user) {
           const idToken = await user.getIdToken();
-          const likesResponse = await fetch('http://51.175.105.40:8080/api/me/likes/tracks', {
+          const likesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
             headers: { 'Authorization': `Bearer ${idToken}` }
           });
           if (likesResponse.ok) {
@@ -82,7 +82,7 @@ const AllTracksPage: NextPage = () => {
             setLikedTrackIds(new Set(likedData.map((t: TrackForQueue) => t.id)));
           }
         }
-        const response = await fetch(`http://51.175.105.40:8080/api/tracks/trending?limit=${PAGE_SIZE}&offset=0`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/trending?limit=${PAGE_SIZE}&offset=0`);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data: TrackForQueue[] = await response.json();
         setTracks(data.map((track: TrackForQueue) => ({ ...track, licensing: 'proprietary' } as TrackForQueue)));
@@ -105,7 +105,7 @@ const AllTracksPage: NextPage = () => {
     const loadMoreTracks = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://51.175.105.40:8080/api/tracks/trending?limit=${PAGE_SIZE}&offset=${offset}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/trending?limit=${PAGE_SIZE}&offset=${offset}`);
         if (!response.ok) throw new Error(`API error: ${response.status}`);
         const data: TrackForQueue[] = await response.json();
         setTracks(prevTracks => [...prevTracks, ...data.map((track: TrackForQueue) => ({ ...track, licensing: 'proprietary' } as TrackForQueue))]);

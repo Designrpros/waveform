@@ -195,7 +195,7 @@ export const SongRow: React.FC<SongRowProps> = ({ track, queue, isInitiallyLiked
 
     try {
       const idToken = await user.getIdToken();
-      const response = await fetch(`http://51.175.105.40:8080/api/likes`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/likes`, {
         method: isLiked ? 'DELETE' : 'POST',
         headers: {
           'Authorization': `Bearer ${idToken}`,

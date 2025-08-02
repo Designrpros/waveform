@@ -102,8 +102,8 @@ const LibraryPage: NextPage = () => {
     try {
       const idToken = await user.getIdToken();
       const [playlistsRes, followsRes] = await Promise.all([
-        fetch('http://51.175.105.40:8080/api/playlists', { headers: { 'Authorization': `Bearer ${idToken}` } }),
-        fetch('http://51.175.105.40:8080/api/me/follows', { headers: { 'Authorization': `Bearer ${idToken}` } })
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers: { 'Authorization': `Bearer ${idToken}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/follows`, { headers: { 'Authorization': `Bearer ${idToken}` } })
       ]);
       
       if (!playlistsRes.ok) throw new Error('Failed to fetch playlists.');
@@ -132,7 +132,7 @@ const LibraryPage: NextPage = () => {
     if (!user || !newPlaylistName.trim()) return;
     try {
         const idToken = await user.getIdToken();
-        const response = await fetch('http://51.175.105.40:8080/api/playlists', {
+        const response = await fetch('${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${idToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newPlaylistName, isPublic: isPublicPlaylist }),

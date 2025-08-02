@@ -72,7 +72,7 @@ const AllPlaylistsPage = () => {
       setLoading(true);
       try {
         const idToken = await user.getIdToken();
-        const response = await fetch('http://51.175.105.40:8080/api/me/playlists', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/playlists`, {
           headers: { 'Authorization': `Bearer ${idToken}` }
         });
         if (!response.ok) {
