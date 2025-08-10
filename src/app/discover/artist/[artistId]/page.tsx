@@ -48,7 +48,6 @@ const BackButton = styled(Link)`
 
 // --- Interfaces ---
 interface Artist { id: string; artist_name: string; bio: string; artwork: string; }
-interface Album extends AlbumType {}
 
 const ArtistDetailPage = () => {
   const params = useParams();
@@ -57,7 +56,7 @@ const ArtistDetailPage = () => {
 
   const [artist, setArtist] = useState<Artist | null>(null);
   const [tracks, setTracks] = useState<TrackForQueue[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [likedTrackIds, setLikedTrackIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -79,7 +78,7 @@ const ArtistDetailPage = () => {
         const albumsData = await albumsRes.ok ? await albumsRes.json() : [];
 
         setArtist(artistData);
-        setTracks(tracksData.map((t: any) => ({ ...t, artwork: t.artwork || artistData.artwork })));
+        setTracks(tracksData.map((t: TrackForQueue) => ({ ...t, artwork: t.artwork || artistData.artwork })));
         setAlbums(albumsData);
 
         if (user) {

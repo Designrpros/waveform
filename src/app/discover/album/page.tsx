@@ -37,11 +37,8 @@ const BackButton = styled(Link)`
   &:hover { color: ${({ theme }) => theme.text}; }
 `;
 
-// --- Interfaces ---
-interface Album extends AlbumType {}
-
 const AllAlbumsPage = () => {
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +49,7 @@ const AllAlbumsPage = () => {
         // CORRECTED: This now points to the correct endpoint for top albums
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/albums/top`);
         if (!response.ok) throw new Error('Failed to fetch albums');
-        const data: Album[] = await response.json();
+        const data: AlbumType[] = await response.json();
         setAlbums(data);
       } catch (error) {
         console.error(error);

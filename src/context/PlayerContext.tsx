@@ -169,7 +169,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     }
     setCurrentTrack(track);
     try {
-        // Corrected: Use 'void' to indicate the promise is intentionally not awaited
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         void fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/track/${track.id}/play`, { method: 'POST' });
     } catch (error) { console.warn("Could not update play count:", error); }
   }, [isShuffling]);
