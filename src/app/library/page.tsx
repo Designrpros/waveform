@@ -1,3 +1,4 @@
+// src/app/library/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -97,13 +98,20 @@ const LibraryPage: NextPage = () => {
   const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
 
   const fetchLibraryData = useCallback(async () => {
-    if (!user) return;
+    // This guard is crucial: it ensures we don't proceed without a logged-in user.
+    if (!user) {
+        setFetchStatus('error'); // Set to error if this is called without a user
+        return;
+    };
+
     setFetchStatus('loading');
     try {
       const idToken = await user.getIdToken();
+      const headers = { 'Authorization': `Bearer ${idToken}` };
+
       const [playlistsRes, followsRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers: { 'Authorization': `Bearer ${idToken}` } }),
-        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/follows`, { headers: { 'Authorization': `Bearer ${idToken}` } })
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers }),
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/follows`, { headers })
       ]);
       
       if (!playlistsRes.ok) throw new Error('Failed to fetch playlists.');
@@ -122,8 +130,14 @@ const LibraryPage: NextPage = () => {
   }, [user]);
   
   useEffect(() => {
-    if (loading) return;
-    if (!user) { router.push('/login'); return; }
+    if (loading) {
+      setFetchStatus('loading');
+      return;
+    }
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     fetchLibraryData();
   }, [user, loading, router, fetchLibraryData]);
   
@@ -132,16 +146,17 @@ const LibraryPage: NextPage = () => {
     if (!user || !newPlaylistName.trim()) return;
     try {
         const idToken = await user.getIdToken();
-        const response = await fetch('${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${idToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newPlaylistName, isPublic: isPublicPlaylist }),
         });
         if (!response.ok) throw new Error('Failed to create playlist.');
+        const newPlaylist = await response.json();
+        setPlaylists(prev => [...prev, newPlaylist]);
         setNewPlaylistName('');
         setIsPublicPlaylist(false);
         setIsCreateModalOpen(false);
-        await fetchLibraryData(); // Use await to ensure data is fresh
     } catch (error) {
         alert('Error creating playlist. Please try again.');
         console.error(error);

@@ -2,11 +2,10 @@
 "use client";
 
 import type { NextPage } from 'next';
-import Head from 'next/head';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Music, UploadCloud, Users, Sparkles, Globe, FileText } from 'lucide-react'; // Added FileText import
-import Link from 'next/link'; // Ensure Link is imported
+import { Music, UploadCloud, Users, Sparkles, Globe, FileText } from 'lucide-react';
+import Link from 'next/link';
 
 // --- Styled Components (specific to this page) ---
 const Section = styled.section`
@@ -89,7 +88,6 @@ const ButtonGroup = styled.div`
   }
 `;
 
-// Base styled component, now a div
 const StyledButtonBase = styled.div`
   display: inline-flex;
   align-items: center;
@@ -101,9 +99,9 @@ const StyledButtonBase = styled.div`
   padding: 0.75rem 1.25rem;
   color: ${({ theme }) => theme.text};
   transition: background-color 0.2s;
-  text-decoration: none; /* Keep for visual consistency, Link's <a> will be external */
+  text-decoration: none;
   font-weight: 600;
-  cursor: pointer; /* Add cursor pointer as it's not a native <a> by default now */
+  cursor: pointer;
   &:hover {
     background-color: ${({ theme }) => theme.buttonHoverBg};
   }
@@ -126,7 +124,6 @@ const SecondaryButton = styled(StyledButtonBase)`
     background-color: ${({ theme }) => theme.buttonHoverBg};
   }
 `;
-
 
 const SectionTitle = styled.h2`
   font-size: 2.5rem;
@@ -195,54 +192,6 @@ const FeatureTitle = styled.h3`
 const FeatureText = styled.p`
   color: ${({ theme }) => theme.subtleText};
   line-height: 1.6;
-`;
-
-const ContentPathGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  margin-top: 4rem;
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr); /* Three columns for the three paths */
-  }
-`;
-
-const PathCard = styled(StyledFeatureCard)`
-  text-align: left;
-  padding: 1.5rem;
-`;
-
-const PathTitle = styled.h3`
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text};
-  margin-bottom: 0.75rem;
-`;
-
-const PathDescription = styled.p`
-  font-size: 0.95rem;
-  color: ${({ theme }) => theme.subtleText};
-  line-height: 1.5;
-`;
-
-const PathList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin-top: 1rem;
-`;
-
-const PathListItem = styled.li`
-  color: ${({ theme }) => theme.subtleText};
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  &::before {
-    content: '✓';
-    color: #4CAF50; /* Green checkmark */
-    font-weight: bold;
-  }
 `;
 
 const FAQContainer = styled.div`
@@ -322,28 +271,21 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 const HomePage: NextPage = () => {
   return (
     <>
-      <Head>
-        <title>Waveform.ink - Your Music Ecosystem | Player &amp; Artist Portal</title>
-        <meta name="description" content="Waveform.ink is your gateway to a unique music experience. Discover independent music with the Waveform app and empower artists with the WaveForum upload portal. Self-hosted content, Creative Commons, and proprietary music, all in one place." />
-        <link rel="icon" href="/assets/WaveForm.jpeg" />
-      </Head>
-      
       <Container>
         <HeroSection>
           <HeroBackgroundGlow />
           <HeroContent>
             <HeroTitle>
-              The Future of Music
+              WaveForum
               <br />
-              <GradientText>Discovery &amp; Distribution.</GradientText>
+              <GradientText>A Voice For Independent Music.</GradientText>
             </HeroTitle>
             <HeroSubtitle>
-              Waveform.ink is building a comprehensive ecosystem for artists and listeners. Discover unique music, empower creators, and control your sound.
+              WaveForum is a community-driven ecosystem for artists and listeners. Discover unique music, empower creators, and control your sound.
             </HeroSubtitle>
             <ButtonGroup>
-              {/* Updated Link usage: Link wraps the styled component, passHref removed, as="a" removed from styled component */}
-              <Link href="/download">
-                <PrimaryButton>Explore Waveform App</PrimaryButton>
+              <Link href="/discover">
+                <PrimaryButton>Explore Music</PrimaryButton>
               </Link>
               <Link href="/for-artists">
                 <SecondaryButton>Become an Artist</SecondaryButton>
@@ -355,10 +297,10 @@ const HomePage: NextPage = () => {
         <Section id="discover">
           <SectionTitle>Discover Music, Reimagined.</SectionTitle>
           <SectionSubtitle>
-            Dive into a curated library of independent artists and Creative Commons masterpieces. Experience music without limits, directly in the Waveform app.
+            Dive into a curated library of independent artists and Creative Commons masterpieces. Experience music without limits, directly in the WaveForum app.
           </SectionSubtitle>
           <FeatureGrid>
-            <FeatureCard icon={<Music size={32} />} title="Vast &amp; Diverse Library">
+            <FeatureCard icon={<Music size={32} />} title="Vast & Diverse Library">
               Access thousands of tracks from independent artists and Creative Commons archives, all legally hosted and served by us.
             </FeatureCard>
             <FeatureCard icon={<Sparkles size={32} />} title="Unique Soundscapes">
@@ -371,13 +313,13 @@ const HomePage: NextPage = () => {
         </Section>
 
         <Section id="for-artists">
-          <SectionTitle>Empower Your Sound with WaveForum.</SectionTitle>
+          <SectionTitle>Empower Your Sound.</SectionTitle>
           <SectionSubtitle>
             For artists, WaveForum is your direct portal to distribute music, gain control, and connect with a dedicated audience.
           </SectionSubtitle>
           <FeatureGrid>
-            <FeatureCard icon={<UploadCloud size={32} />} title="Direct Upload &amp; Hosting">
-              Upload your music directly to our platform. We handle the hosting and distribution to Waveform app users.
+            <FeatureCard icon={<UploadCloud size={32} />} title="Direct Upload & Hosting">
+              Upload your music directly to our platform. We handle the hosting and distribution to WaveForum app users.
             </FeatureCard>
             <FeatureCard icon={<FileText size={32} />} title="Flexible Licensing Options">
               You choose how your music is shared. Opt for Creative Commons licenses or select proprietary licensing for exclusive distribution.
@@ -388,83 +330,29 @@ const HomePage: NextPage = () => {
           </FeatureGrid>
         </Section>
 
-        <Section id="content-strategy">
-          <SectionTitle>Our Content Strategy: Three Paths to Your Audience.</SectionTitle>
-          <SectionSubtitle>
-            We embrace a multi-faceted approach to ensure your music reaches its full potential.
-          </SectionSubtitle>
-          <ContentPathGrid>
-            <PathCard>
-              <PathTitle>Path 1: Mainstream Distribution</PathTitle>
-              <PathDescription>
-                Our studio&apos;s music continues to leverage established platforms like Distrokid for broad reach on Spotify, Apple Music, and YouTube. This ensures wide audience access and established monetization.
-              </PathDescription>
-              <PathList>
-                <PathListItem>Broadest audience reach</PathListItem>
-                <PathListItem>Utilizes existing monetization</PathListItem>
-                <PathListItem>Minimal internal overhead</PathListItem>
-              </PathList>
-            </PathCard>
-            <PathCard>
-              <PathTitle>Path 2: Self-Hosted Creative Commons</PathTitle>
-              <PathDescription>
-                Music acquired under Creative Commons licenses (e.g., FMA sourced or studio&apos;s own CC releases) is self-hosted. This enables full in-app playback, downloads, and potential user export.
-              </PathDescription>
-              <PathList>
-                <PathListItem>Full in-app control &amp; playback</PathListItem>
-                <PathListItem>Enhanced discovery for niche content</PathListItem>
-                <PathListItem>Offline access &amp; potential export</PathListItem>
-              </PathList>
-            </PathCard>
-            <PathCard>
-              <PathTitle>Path 3: Self-Hosted Proprietary/Licensed</PathTitle>
-              <PathDescription>
-                Our studio&apos;s non-CC music and other directly licensed content is self-hosted. This offers exclusive control, in-app playback, and in-app-only downloads, respecting proprietary licenses.
-              </PathDescription>
-              <PathList>
-                <PathListItem>Exclusive content control</PathListItem>
-                <PathListItem>Expanded unique library</PathListItem>
-                <PathListItem>In-app only downloads</PathListItem>
-              </PathList>
-            </PathCard>
-          </ContentPathGrid>
-        </Section>
-
         <Section id="about">
           <FAQContainer>
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <SectionTitle>About Waveform.ink</SectionTitle>
+              <SectionTitle>About WaveForum</SectionTitle>
               <SectionSubtitle>
                 Building the next generation of music experiences.
               </SectionSubtitle>
             </div>
             <FAQItem
-              question="What is Waveform.ink?"
-              answer="Waveform.ink is the umbrella platform for our music ecosystem, comprising the Waveform app (a native music player for Apple platforms) and WaveForum (a web portal for artists to upload and manage their music for distribution through Waveform.ink)."
-            />
-            <FAQItem
-              question="What is the Waveform App?"
-              answer="The Waveform App is a native music player application designed for Apple platforms (iOS, macOS, and visionOS). It allows users to stream and manage music from our self-hosted library, offering features like dynamic waveform visualization, extensive content discovery, and personalized playback features. You can learn more and download it on our dedicated download page."
-            />
-            <FAQItem
               question="What is WaveForum?"
-              answer="WaveForum is the artist portal where creators can directly upload their music to be hosted by Studio 51 and distributed through the Waveform app. It provides artists with control over their licensing (Creative Commons or proprietary) and direct access to our growing audience."
+              answer="WaveForum is a music ecosystem comprising a native music player app for Apple platforms and a web portal for artists to upload and manage their music for distribution."
             />
             <FAQItem
-              question="How can artists get their music on Waveform.ink?"
-              answer="Artists can use the WaveForum portal to upload their tracks. We offer flexible licensing options, including Creative Commons for broader sharing or proprietary licenses for exclusive distribution within our ecosystem. Visit the 'For Artists' section for more details on getting started."
+              question="How can artists get their music on WaveForum?"
+              answer="Artists can use the WaveForum portal to upload their tracks. We offer flexible licensing options, including Creative Commons for broader sharing or proprietary licenses for exclusive distribution within our ecosystem. All music is reviewed by our admin team for quality control."
             />
             <FAQItem
-              question="Is all music on Waveform.ink self-hosted?"
-              answer="Our platform primarily focuses on self-hosting music under Creative Commons licenses (including content sourced from platforms like Free Music Archive, with proper adherence to their terms) and proprietary music directly licensed or owned by Studio 51. This ensures full control over the user experience and compliance."
+              question="Is all music on WaveForum self-hosted?"
+              answer="Yes, our platform primarily focuses on self-hosting music under Creative Commons licenses (including content sourced from platforms like Free Music Archive) and proprietary music directly licensed or owned by Studio 51."
             />
             <FAQItem
-              question="How does Waveform.ink handle music licensing?"
-              answer="We offer artists the choice between Creative Commons licenses (e.g., CC BY, CC BY-SA) for broader reusability and proprietary licenses. For Creative Commons content, we ensure all license terms are respected and displayed. For proprietary content, downloads within the app are for in-app offline playback only, with no external export."
-            />
-            <FAQItem
-              question="Who developed Waveform.ink and how can I contact support?"
-              answer="Waveform.ink is developed by Studio 51, with core development led by Vegar Lee Berentsen, passionate about creating innovative media experiences. For support, feedback, or collaboration inquiries, please use the 'Contact Us' button in the Support section of the app's settings (for app-specific issues), or email us directly at designr.pros@gmail.com for platform-related inquiries."
+              question="Who developed WaveForum?"
+              answer="WaveForum is developed and maintained by Studio 51, a collective passionate about creating innovative media experiences. For support or inquiries, please email us directly at designr.pros@gmail.com."
             />
           </FAQContainer>
         </Section>

@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ currentThemeName, toggleTheme })
       <HeaderContent>
         <LogoContainer href="/">
           <LogoImage src="/assets/WaveForm.jpeg" alt="WaveForm Logo" />
-          <LogoText>Waveform.ink</LogoText>
+          <LogoText>Waveforum</LogoText>
         </LogoContainer>
         <HeaderActions>
           <NavLinks>

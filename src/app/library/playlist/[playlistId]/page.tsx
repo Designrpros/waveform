@@ -70,7 +70,6 @@ const PlaylistDetailPage = () => {
       try {
         const idToken = await user?.getIdToken();
         
-        // CORRECTED: Build the request options conditionally to satisfy TypeScript
         const requestOptions: RequestInit = {};
         if (idToken) {
             requestOptions.headers = { 'Authorization': `Bearer ${idToken}` };
@@ -82,8 +81,7 @@ const PlaylistDetailPage = () => {
         ]);
         
         if (!playlistResponse.ok) {
-            // If not found, and the user is not logged in, redirect them to log in
-            if (playlistResponse.status === 404 && !user) {
+            if (playlistResponse.status === 401 || (playlistResponse.status === 403 && !user)) {
                 router.push('/login');
                 return;
             }

@@ -72,8 +72,6 @@ const PlayButton = styled.button`
   transition: background-color 0.2s, color 0.2s;
 
   &:hover {
-    /* *** THIS IS THE FIX *** */
-    /* We now use the safe accentColor property instead of parsing the gradient string */
     background-color: ${({ theme }) => theme.accentColor};
     color: white;
   }
@@ -152,6 +150,7 @@ const TrackDetailPage = () => {
             artist: track.artist,
             audioPath: track.audioPath,
             artwork: track.artwork,
+            licensing: 'proprietary' as const // Assuming default, as this page doesn't have license info
         };
         playTrack(playerTrack, [playerTrack]);
       }

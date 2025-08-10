@@ -1,3 +1,4 @@
+// src/app/discover/genre/[genreId]/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -75,12 +76,14 @@ const GenreDetailPage: NextPage = () => {
       const fetchGenreDetails = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/genre/${genreId}`);
+          // CORRECTED: The API call now points to the correct backend route
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tracks/genre/${genreId}`);
           if (!response.ok) {
             throw new Error('Failed to fetch genre details');
           }
-          const data: Genre = await response.json();
-          setGenre(data);
+          const data = await response.json();
+          // The data from the server is just a list of tracks, not a genre object
+          setGenre({ id: genreId, name: 'Genre', tracks: data });
         } catch (error) {
           console.error(error);
         } finally {

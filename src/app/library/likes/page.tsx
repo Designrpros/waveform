@@ -1,3 +1,4 @@
+// src/app/library/likes/page.tsx
 "use client";
 
 import type { NextPage } from 'next';
@@ -43,12 +44,19 @@ const LikedSongsPage: NextPage = () => {
   const [fetchStatus, setFetchStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   useEffect(() => {
-    if (loading) return;
+    // Wait until the initial authentication check is complete.
+    if (loading) {
+      setFetchStatus('loading');
+      return;
+    }
+
+    // If auth check is done and there's no user, redirect to login.
     if (!user) {
       router.push('/login');
       return;
     }
 
+    // If we have a user, proceed to fetch their liked tracks.
     const fetchLikedTracks = async () => {
       setFetchStatus('loading');
       try {
@@ -65,13 +73,13 @@ const LikedSongsPage: NextPage = () => {
         setFetchStatus('error');
       }
     };
+    
     fetchLikedTracks();
   }, [user, loading, router]);
 
   const renderContent = () => {
-    if (fetchStatus === 'loading' || loading) return <Message>Loading your liked songs...</Message>;
+    if (fetchStatus === 'loading') return <Message>Loading your liked songs...</Message>;
     if (fetchStatus === 'error') return <Message>Could not load liked tracks. Please try again.</Message>;
-    // Corrected: Escaped apostrophe
     if (likedTracks.length === 0) return <Message>You haven&apos;t liked any tracks yet.</Message>;
     
     return (

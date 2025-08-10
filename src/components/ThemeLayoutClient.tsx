@@ -7,9 +7,8 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { PlayerProvider } from '../context/PlayerContext';
 import { GlobalPlayer } from './GlobalPlayer';
-import { AuthProvider } from '../context/AuthContext'; // <-- IMPORT
+import { AuthProvider } from '../context/AuthContext';
 
-// ... (theme definitions and styled-components remain the same) ...
 const lightTheme: DefaultTheme = {
   body: '#f0ecec',
   text: '#1F2937',
@@ -74,7 +73,7 @@ export function ThemeLayoutClient({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeProvider theme={currentTheme}>
-      <AuthProvider> {/* <-- WRAP WITH AUTH PROVIDER */}
+      <AuthProvider>
         <PlayerProvider>
           <GlobalStyle />
           <PageWrapper>
@@ -86,7 +85,7 @@ export function ThemeLayoutClient({ children }: { children: React.ReactNode }) {
           </PageWrapper>
           <GlobalPlayer />
         </PlayerProvider>
-      </AuthProvider> {/* <-- END WRAPPER */}
+      </AuthProvider>
     </ThemeProvider>
   );
 }

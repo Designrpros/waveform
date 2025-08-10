@@ -64,24 +64,28 @@ const Artist = styled.p`
   text-overflow: ellipsis;
 `;
 
-// --- Component Props ---
-interface AlbumCardProps {
+// --- Component Props and Types ---
+export interface Album {
   id: string;
   title: string;
   artist: string;
   artwork: string;
 }
 
+interface AlbumCardProps {
+  album: Album;
+}
+
 // --- Component ---
-export const AlbumCard: React.FC<AlbumCardProps> = ({ id, title, artist, artwork }) => {
+export const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
   return (
-    <CardContainer href={`/discover/album/${id}`}>
+    <CardContainer href={`/discover/album/${album.id}`}>
       <ArtworkWrapper>
-        <Artwork src={artwork} alt={`${title} by ${artist}`} />
+        <Artwork src={album.artwork} alt={`${album.title} by ${album.artist}`} />
       </ArtworkWrapper>
       <InfoContainer>
-        <Title>{title}</Title>
-        <Artist>{artist}</Artist>
+        <Title>{album.title}</Title>
+        <Artist>{album.artist}</Artist>
       </InfoContainer>
     </CardContainer>
   );
