@@ -1,6 +1,7 @@
+// src/app/discover/public-playlists/page.tsx
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { PlaylistCard, PublicPlaylist } from '../../../components/PlaylistCard';
 import { ChevronLeft } from 'lucide-react';
@@ -71,32 +72,66 @@ const BackButton = styled(Link)`
 
 // --- Page Component ---
 const AllPublicPlaylistsPage = () => {
-  const [playlists, setPlaylists] = React.useState<PublicPlaylist[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [loading, setLoading] = React.useState(true);
+  const [playlists, setPlaylists] = useState<PublicPlaylist[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchPlaylists = async () => {
-      setLoading(true);
+      setStatus('loading');
+      let response: Response | undefined;
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/public`);
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/public`);
         if (!response.ok) {
-          throw new Error('Failed to fetch public playlists');
+          // Throw an error to be caught and logged below
+          throw new Error(`Server responded with ${response.status}`);
         }
-        const data: PublicPlaylist[] = await response.json(); // Corrected: Add type
+        const data: PublicPlaylist[] = await response.json();
         setPlaylists(data);
+        setStatus('success');
       } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+        console.error("--- DEBUG: Fetch Public Playlists FAILED ---");
+        // If the fetch failed, the response object will have details
+        if (response) {
+          console.error(`Backend responded with Status: ${response.status} ${response.statusText}`);
+          // Attempt to get the raw text body of the error response from the server
+          const responseBody = await response.text();
+          console.error("Backend Response Body:", responseBody);
+        }
+        // Also log the generic error object for more context
+        console.error("Caught error object:", error);
+        setStatus('error');
       }
     };
     fetchPlaylists();
   }, []);
 
-  const filteredPlaylists = playlists.filter((playlist: PublicPlaylist) => // Corrected: Add type
+  const filteredPlaylists = playlists.filter((playlist: PublicPlaylist) =>
     playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const renderContent = () => {
+    if (status === 'loading') {
+      return <Message>Loading playlists...</Message>;
+    }
+    if (status === 'error') {
+      return <Message>Could not load public playlists. Please check the console for details.</Message>;
+    }
+    if (filteredPlaylists.length > 0) {
+      return (
+        <PlaylistGrid>
+          {filteredPlaylists.map((playlist: PublicPlaylist) => (
+            <PlaylistCard
+              key={playlist.id}
+              playlist={playlist}
+              isDiscovery={true}
+            />
+          ))}
+        </PlaylistGrid>
+      );
+    }
+    return <Message>There aren&apos;t any public playlists yet. Be the first to create one!</Message>;
+  };
 
   return (
     <Container>
@@ -112,22 +147,7 @@ const AllPublicPlaylistsPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </Header>
-      {loading ? (
-        <Message>Loading playlists...</Message>
-      ) : filteredPlaylists.length > 0 ? (
-        <PlaylistGrid>
-          {filteredPlaylists.map((playlist: PublicPlaylist) => ( // Corrected: Add type
-            <PlaylistCard
-              key={playlist.id}
-              playlist={playlist}
-              isDiscovery={true}
-            />
-          ))}
-        </PlaylistGrid>
-      ) : (
-        // Corrected: Escaped apostrophe
-        <Message>There aren&apos;t any public playlists yet. Be the first to create one!</Message>
-      )}
+      {renderContent()}
     </Container>
   );
 };

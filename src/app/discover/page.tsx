@@ -3,7 +3,7 @@
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Search, ChevronRight, X as XIcon, Music } from 'lucide-react';
 import Link from 'next/link';
@@ -303,21 +303,8 @@ type PublicPlaylist = PlaylistCardType & { description?: string };
 type Album = AlbumType;
 interface MusicItem { id: string; title?: string; name?: string; artist?: string; artwork?: string; songs?: number; creatorName?: string; }
 interface GenreItem { id: number; name: string; color: string; }
-
-// NEW: Interface for Profile search results
-interface ProfileResult {
-  user_id: string;
-  display_name: string;
-  profile_artwork: string;
-}
-
-interface SearchResults {
-  tracks: TrackForQueue[];
-  albums: Album[];
-  artists: MusicItem[];
-  playlists: PublicPlaylist[];
-  profiles: ProfileResult[];
-}
+interface ProfileResult { user_id: string; display_name: string; profile_artwork: string; }
+interface SearchResults { tracks: TrackForQueue[]; albums: Album[]; artists: MusicItem[]; playlists: PublicPlaylist[]; profiles: ProfileResult[]; }
 type TrackFromApi = Omit<TrackForQueue, 'licensing'>;
 
 // --- Helper Components ---
@@ -333,11 +320,16 @@ const MusicItemRow: React.FC<{ item: MusicItem; type: 'album' | 'artist' | 'play
                               type === 'profile' ? 'User Profile' :
                               item.artist || 'Unknown Artist';
 
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = `https://placehold.co/50x50/383434/F9FAFB?text=${titleToDisplay.substring(0,1)}`;
+    };
+
     return (
         <MusicItemRowContainer href={href}>
             <MusicRowArtwork 
                 src={item.artwork || `https://placehold.co/50x50/383434/F9FAFB?text=${titleToDisplay.substring(0,1)}`} 
                 alt={titleToDisplay} 
+                onError={handleImageError}
             />
             <MusicRowTextContent>
                 <MusicRowTitle>{titleToDisplay}</MusicRowTitle>
@@ -349,24 +341,23 @@ const MusicItemRow: React.FC<{ item: MusicItem; type: 'album' | 'artist' | 'play
 const GenreCard: React.FC<{ genre: GenreItem }> = ({ genre }) => {
     return ( <GenreCardContainer href={`/discover/genre/${genre.id}`} $color={genre.color}>{genre.name}</GenreCardContainer> );
 };
-const safeFetch = async (url: string, endpointName: string, options?: RequestInit) => { 
+const safeFetch = async (url: string, options?: RequestInit) => { 
   const response = await fetch(url, options);
-  if (!response.ok) throw new Error(`${endpointName} API error: ${response.status}`); 
-  try { return await response.json(); } catch (e) { console.error(`Failed to parse JSON from ${endpointName}:`, e); throw new Error(`Could not parse data from ${endpointName}.`); } 
+  if (!response.ok) throw new Error(`API error: ${response.status}`); 
+  try { return await response.json(); } catch (e) { console.error(`Failed to parse JSON:`, e); throw new Error(`Could not parse data.`); } 
 };
 
 // --- Page Component ---
 const DiscoverPage: NextPage = () => {
   const { user } = useAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
-  const [topGenres, setTopGenres] = useState<GenreItem[]>([]);
-  const [trendingSongs, setTrendingSongs] = useState<TrackForQueue[]>([]);
-  const [popularArtists, setPopularArtists] = useState<MusicItem[]>([]);
-  const [topAlbums, setTopAlbums] = useState<Album[]>([]);
-  const [publicPlaylists, setPublicPlaylists] = useState<PublicPlaylist[]>([]);
-  const [curatedPlaylists, setCuratedPlaylists] = useState<PublicPlaylist[]>([]);
+  const [topGenres, setTopGenres] = useState<GenreItem[] | null>(null);
+  const [trendingSongs, setTrendingSongs] = useState<TrackForQueue[] | null>(null);
+  const [popularArtists, setPopularArtists] = useState<MusicItem[] | null>(null);
+  const [topAlbums, setTopAlbums] = useState<Album[] | null>(null);
+  const [publicPlaylists, setPublicPlaylists] = useState<PublicPlaylist[] | null>(null);
+  const [curatedPlaylists, setCuratedPlaylists] = useState<PublicPlaylist[] | null>(null);
   const [likedTrackIds, setLikedTrackIds] = useState<Set<string>>(new Set());
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -376,63 +367,51 @@ const DiscoverPage: NextPage = () => {
   useEffect(() => {
     const fetchPublicData = async () => {
       setStatus('loading');
-      try {
-        const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
-        const [albums, artists, tracks, genres, publicPl, curatedPl] = await Promise.all([
-          safeFetch(`${API_BASE_URL}/albums/top`, 'Top Albums'),
-          safeFetch(`${API_BASE_URL}/artists/popular`, 'Popular Artists'),
-          safeFetch(`${API_BASE_URL}/tracks/trending`, 'Trending Tracks'),
-          safeFetch(`${API_BASE_URL}/genres`, 'Genres'),
-          safeFetch(`${API_BASE_URL}/playlists/public`, 'Public Playlists'),
-          safeFetch(`${API_BASE_URL}/playlists/curated`, 'Curated Playlists')
-        ]);
-        setTopAlbums(albums);
-        setPopularArtists(artists);
-        const formattedTracks = tracks.map((track: TrackFromApi) => ({ ...track, licensing: 'proprietary' as const }));
-        setTrendingSongs(formattedTracks);
-        const formattedGenres = genres.map((genre: { id: number; name: string }) => ({ ...genre, color: generateColor(genre.name) }));
-        setTopGenres(formattedGenres);
-        setPublicPlaylists(publicPl);
-        setCuratedPlaylists(curatedPl);
-        setStatus('success');
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-            setErrorMessage(error.message || 'An unknown error occurred.');
-        } else {
-            setErrorMessage('An unknown error occurred.');
-        }
-        setStatus('error');
-      }
+      const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
+      
+      // Use Promise.allSettled to allow some requests to fail without breaking the page
+      const results = await Promise.allSettled([
+        safeFetch(`${API_BASE_URL}/albums/top`),
+        safeFetch(`${API_BASE_URL}/artists/popular`),
+        safeFetch(`${API_BASE_URL}/tracks/trending`),
+        safeFetch(`${API_BASE_URL}/genres`),
+        safeFetch(`${API_BASE_URL}/playlists/public`),
+        safeFetch(`${API_BASE_URL}/playlists/curated`)
+      ]);
+
+      // Process results individually
+      if (results[0].status === 'fulfilled') setTopAlbums(results[0].value); else console.error("Failed to fetch Top Albums:", results[0].reason);
+      if (results[1].status === 'fulfilled') setPopularArtists(results[1].value); else console.error("Failed to fetch Popular Artists:", results[1].reason);
+      if (results[2].status === 'fulfilled') setTrendingSongs(results[2].value.map((track: TrackFromApi) => ({ ...track, licensing: 'proprietary' as const }))); else console.error("Failed to fetch Trending Tracks:", results[2].reason);
+      if (results[3].status === 'fulfilled') setTopGenres(results[3].value.map((genre: { id: number; name: string }) => ({ ...genre, color: generateColor(genre.name) }))); else console.error("Failed to fetch Genres:", results[3].reason);
+      if (results[4].status === 'fulfilled') setPublicPlaylists(results[4].value); else console.error("Failed to fetch Public Playlists:", results[4].reason);
+      if (results[5].status === 'fulfilled') setCuratedPlaylists(results[5].value); else console.error("Failed to fetch Curated Playlists:", results[5].reason);
+      
+      setStatus('success');
     };
     fetchPublicData();
   }, []);
 
-  // --- THIS IS THE FIX ---
-  // A separate useEffect hook to fetch user-specific data only when the user is logged in.
-  // This prevents the 401 error when a guest visits the page.
   useEffect(() => {
     const fetchUserLikes = async () => {
         if (user) {
             try {
-                const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
                 const idToken = await user.getIdToken();
-                const likedTracks: TrackForQueue[] = await safeFetch(
-                    `${API_BASE_URL}/me/likes/tracks`, 
-                    'Liked Tracks', 
+                const likedTracks: { id: string }[] = await safeFetch(
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, 
                     { headers: { 'Authorization': `Bearer ${idToken}` } }
                 );
                 setLikedTrackIds(new Set(likedTracks.map(track => track.id)));
             } catch (error) {
                 console.warn("Could not fetch liked tracks:", error);
-                setLikedTrackIds(new Set()); // Reset on error
+                setLikedTrackIds(new Set());
             }
         } else {
-            // If the user logs out, clear their liked tracks
             setLikedTrackIds(new Set());
         }
     };
     fetchUserLikes();
-  }, [user]); // This effect re-runs whenever the user's auth state changes.
+  }, [user]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -443,8 +422,7 @@ const DiscoverPage: NextPage = () => {
     setIsSearching(true);
     const debounceTimer = setTimeout(async () => {
       try {
-        const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}`;
-        const data = await safeFetch(`${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`, 'Search');
+        const data = await safeFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}`);
         setSearchResults(data);
       } catch (error) {
         console.error("Search failed:", error);
@@ -491,7 +469,6 @@ const DiscoverPage: NextPage = () => {
                 </AlbumGrid>
             </SearchResultCategory>
         )}
-        {/* NEW: Display profiles in search results */}
         {profiles.length > 0 && (
           <SearchResultCategory>
             <SearchResultTitle>Profiles</SearchResultTitle>
@@ -518,8 +495,7 @@ const DiscoverPage: NextPage = () => {
 
   const renderDefaultContent = () => {
     if (status === 'loading') return <Message>Loading music...</Message>;
-    if (status === 'error') return <Message>Could not load music data. {errorMessage}</Message>;
-    const featuredPlaylist = curatedPlaylists[0];
+    const featuredPlaylist = curatedPlaylists?.[0];
 
     return (
       <>
@@ -543,7 +519,7 @@ const DiscoverPage: NextPage = () => {
           <h3>Top Genres</h3>
           <Link href="/discover/genre">View All <ChevronRight size={20} /></Link>
         </SectionHeaderWithLink>
-        {topGenres.length > 0 ? (
+        {topGenres && topGenres.length > 0 ? (
           <HorizontalScrollContainer>
             {topGenres.map(genre => <GenreCard key={genre.id} genre={genre} />)}
           </HorizontalScrollContainer>
@@ -553,48 +529,53 @@ const DiscoverPage: NextPage = () => {
           <h3>Trending Tracks</h3>
           <Link href="/discover/track">View All <ChevronRight size={20} /></Link>
         </SectionHeaderWithLink>
-        <TrendingList>
-          {trendingSongs.slice(0, 5).map(item => (
-            <SongRow key={item.id} track={item} queue={trendingSongs} isInitiallyLiked={likedTrackIds.has(item.id)} />
-          ))}
-        </TrendingList>
+        {trendingSongs && trendingSongs.length > 0 ? (
+            <TrendingList>
+            {trendingSongs.slice(0, 5).map(item => (
+                <SongRow key={item.id} track={item} queue={trendingSongs} isInitiallyLiked={likedTrackIds.has(item.id)} />
+            ))}
+            </TrendingList>
+        ) : <Message>Could not load trending tracks.</Message>}
+        
 
         <SectionHeaderWithLink>
           <h3>Popular Artists</h3>
           <Link href="/discover/artist">View All <ChevronRight size={20} /></Link>
         </SectionHeaderWithLink>
-        <ArtistGrid>
-          {popularArtists.slice(0, 6).map(item => (
-            <ArtistCard key={item.id} href={`/discover/artist/${item.id}`}>
-              <ArtistAvatar src={item.artwork || `https://placehold.co/120x120/383434/F9FAFB?text=${item.name?.substring(0,1)}`} alt={item.name} />
-              <ArtistName>{item.name}</ArtistName>
-            </ArtistCard>
-          ))}
-        </ArtistGrid>
+        {popularArtists && popularArtists.length > 0 ? (
+            <ArtistGrid>
+            {popularArtists.slice(0, 6).map(item => (
+                <ArtistCard key={item.id} href={`/discover/artist/${item.id}`}>
+                <ArtistAvatar src={item.artwork || `https://placehold.co/120x120/383434/F9FAFB?text=${item.name?.substring(0,1)}`} alt={item.name} />
+                <ArtistName>{item.name}</ArtistName>
+                </ArtistCard>
+            ))}
+            </ArtistGrid>
+        ) : <Message>Could not load popular artists.</Message>}
 
         <SectionHeaderWithLink>
           <h3>Top Albums</h3>
           <Link href="/discover/album">View All <ChevronRight size={20} /></Link>
         </SectionHeaderWithLink>
-        <AlbumGrid>
-            {topAlbums.slice(0, 6).map(item => (
-                <AlbumCard key={item.id} album={item} />
-            ))}
-        </AlbumGrid>
+        {topAlbums && topAlbums.length > 0 ? (
+            <AlbumGrid>
+                {topAlbums.slice(0, 6).map(item => (
+                    <AlbumCard key={item.id} album={item} />
+                ))}
+            </AlbumGrid>
+        ) : <Message>Could not load top albums.</Message>}
         
-        {publicPlaylists.length > 0 && (
-            <>
-                <SectionHeaderWithLink>
-                    <h3>Public Playlists</h3>
-                    <Link href="/discover/public-playlists">
-                      View All <ChevronRight size={20} />
-                    </Link>
-                </SectionHeaderWithLink>
-                <HorizontalScrollContainer>
-                    {publicPlaylists.slice(0, 10).map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} isDiscovery={true} />)}
-                </HorizontalScrollContainer>
-            </>
-        )}
+        <SectionHeaderWithLink>
+            <h3>Public Playlists</h3>
+            <Link href="/discover/public-playlists">
+                View All <ChevronRight size={20} />
+            </Link>
+        </SectionHeaderWithLink>
+        {publicPlaylists && publicPlaylists.length > 0 ? (
+            <HorizontalScrollContainer>
+                {publicPlaylists.slice(0, 10).map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} isDiscovery={true} />)}
+            </HorizontalScrollContainer>
+        ) : <Message>Could not load public playlists.</Message>}
       </>
     );
   };
@@ -602,8 +583,8 @@ const DiscoverPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Discover Music - WaveForm</title>
-        <meta name="description" content="Discover unique and independent music on WaveForm." />
+        <title>Discover Music - WaveForum.org</title>
+        <meta name="description" content="Discover unique and independent music on WaveForum.org." />
       </Head>
       <Container>
         <Section>

@@ -54,9 +54,8 @@ export const Footer: React.FC = () => {
   return (
     <StyledFooter>
       <FooterContent>
-        <p>&copy; {new Date().getFullYear()} Waveform.ink. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} WaveForum.org. All rights reserved.</p>
         <FooterLinks>
-          {/* *** LINK ADDED HERE *** */}
           <FooterLink href="/licensing">Licensing</FooterLink> 
           <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
           <FooterLink href="/terms-of-service">Terms of Service</FooterLink>

@@ -1,3 +1,4 @@
+// src/components/AlbumCard.tsx
 "use client";
 
 import React from 'react';
@@ -78,10 +79,18 @@ interface AlbumCardProps {
 
 // --- Component ---
 export const AlbumCard: React.FC<AlbumCardProps> = ({ album }) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = `https://placehold.co/200x200/383434/F9FAFB?text=${album.title.substring(0,1)}`;
+  };
+
   return (
     <CardContainer href={`/discover/album/${album.id}`}>
       <ArtworkWrapper>
-        <Artwork src={album.artwork} alt={`${album.title} by ${album.artist}`} />
+        <Artwork 
+          src={album.artwork} 
+          alt={`${album.title} by ${album.artist}`} 
+          onError={handleImageError}
+        />
       </ArtworkWrapper>
       <InfoContainer>
         <Title>{album.title}</Title>

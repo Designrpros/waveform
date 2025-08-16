@@ -8,8 +8,8 @@ import { ThemeLayoutClient } from '../components/ThemeLayoutClient';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Waveform.ink - Your Music, Your Way",
-  description: "Discover unique and independent music on Waveform.ink.",
+  title: "WaveForum.org - Your Music, Your Way",
+  description: "Discover unique and independent music on WaveForum.org.",
 };
 
 export default function RootLayout({

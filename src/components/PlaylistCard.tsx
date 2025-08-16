@@ -72,12 +72,16 @@ interface PlaylistCardProps {
 export const PlaylistCard = React.forwardRef<HTMLAnchorElement, PlaylistCardProps>(
   ({ playlist, isDiscovery = false }, ref) => {
     const href = isDiscovery ? `/discover/playlist/${playlist.id}` : `/library/playlist/${playlist.id}`;
+    
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = 'https://placehold.co/180x180/383434/FFFFFF?text=P';
+    };
 
     return (
       <CardContainer href={href} ref={ref}>
         <ArtworkWrapper>
           {playlist.artwork ? (
-            <ArtworkImage src={playlist.artwork} alt={playlist.name} />
+            <ArtworkImage src={playlist.artwork} alt={playlist.name} onError={handleImageError} />
           ) : (
             <ListMusic size={48} color="grey" />
           )}

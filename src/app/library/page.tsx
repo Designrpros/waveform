@@ -3,7 +3,7 @@
 
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { DefaultTheme } from 'styled-components';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
@@ -88,58 +88,65 @@ interface Playlist { id: string; name: string; artwork?: string; }
 interface Artist { id: string; name: string; artwork?: string; }
 
 const LibraryPage: NextPage = () => {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [followedArtists, setFollowedArtists] = useState<Artist[]>([]);
-  const [fetchStatus, setFetchStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  
+  const [playlistsStatus, setPlaylistsStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [artistsStatus, setArtistsStatus] = useState<'loading' | 'success' | 'error'>('loading');
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [isPublicPlaylist, setIsPublicPlaylist] = useState(false);
 
-  const fetchLibraryData = useCallback(async () => {
-    // This guard is crucial: it ensures we don't proceed without a logged-in user.
-    if (!user) {
-        setFetchStatus('error'); // Set to error if this is called without a user
-        return;
-    };
-
-    setFetchStatus('loading');
-    try {
-      const idToken = await user.getIdToken();
-      const headers = { 'Authorization': `Bearer ${idToken}` };
-
-      const [playlistsRes, followsRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers }),
-        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/follows`, { headers })
-      ]);
-      
-      if (!playlistsRes.ok) throw new Error('Failed to fetch playlists.');
-      if (!followsRes.ok) throw new Error('Failed to fetch followed artists.');
-      
-      const playlistsData = await playlistsRes.json();
-      const followsData = await followsRes.json();
-      
-      setPlaylists(playlistsData);
-      setFollowedArtists(followsData);
-      setFetchStatus('success');
-    } catch (error) {
-      console.error(error);
-      setFetchStatus('error');
-    }
-  }, [user]);
-  
   useEffect(() => {
-    if (loading) {
-      setFetchStatus('loading');
+    if (authLoading) {
       return;
     }
     if (!user) {
       router.push('/login');
       return;
     }
+
+    const fetchLibraryData = async () => {
+      const idToken = await user.getIdToken();
+      const headers = { 'Authorization': `Bearer ${idToken}` };
+
+      setPlaylistsStatus('loading');
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch playlists.');
+          return res.json();
+        })
+        .then(data => {
+          setPlaylists(data);
+          setPlaylistsStatus('success');
+        })
+        .catch(error => {
+          console.error(error);
+          setPlaylistsStatus('error');
+        });
+
+      setArtistsStatus('loading');
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/follows`, { headers })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch followed artists.');
+          return res.json();
+        })
+        .then(data => {
+          setFollowedArtists(data);
+          setArtistsStatus('success');
+        })
+        .catch(error => {
+          console.error(error);
+          setArtistsStatus('error');
+        });
+    };
+    
     fetchLibraryData();
-  }, [user, loading, router, fetchLibraryData]);
+  }, [user, authLoading, router]);
   
   const handleCreatePlaylist = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,8 +159,12 @@ const LibraryPage: NextPage = () => {
             body: JSON.stringify({ name: newPlaylistName, isPublic: isPublicPlaylist }),
         });
         if (!response.ok) throw new Error('Failed to create playlist.');
-        const newPlaylist = await response.json();
-        setPlaylists(prev => [...prev, newPlaylist]);
+        
+        const headers = { 'Authorization': `Bearer ${idToken}` };
+        const playlistsRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`, { headers });
+        const playlistsData = await playlistsRes.json();
+        setPlaylists(playlistsData);
+
         setNewPlaylistName('');
         setIsPublicPlaylist(false);
         setIsCreateModalOpen(false);
@@ -163,50 +174,83 @@ const LibraryPage: NextPage = () => {
     }
   };
 
+  const renderPlaylists = () => {
+    if (playlistsStatus === 'loading') return <Message>Loading playlists...</Message>;
+    if (playlistsStatus === 'error') return <Message>Could not load your playlists.</Message>;
+    
+    // *** THIS IS THE FIX ***
+    // Ensure playlists is an array before trying to map over it.
+    if (!Array.isArray(playlists)) {
+        // You can either return null or a message indicating no playlists.
+        return (
+            <GridContainer>
+                <LibraryLinkCard href="/library/likes">
+                    <CardIcon><Heart size={48} /></CardIcon>
+                    <CardTitle>Liked Songs</CardTitle>
+                </LibraryLinkCard>
+                <LibraryButtonCard onClick={() => setIsCreateModalOpen(true)}>
+                    <CardIcon><PlusCircle size={48} /></CardIcon>
+                    <CardTitle>Create Playlist</CardTitle>
+                </LibraryButtonCard>
+            </GridContainer>
+        );
+    }
+
+    return (
+      <GridContainer>
+        <LibraryLinkCard href="/library/likes">
+          <CardIcon><Heart size={48} /></CardIcon>
+          <CardTitle>Liked Songs</CardTitle>
+        </LibraryLinkCard>
+        {playlists.map(playlist => (
+          <LibraryLinkCard key={playlist.id} href={`/library/playlist/${playlist.id}`}>
+            {playlist.artwork ? <PlaylistArtwork src={playlist.artwork} alt={playlist.name} onError={(e) => e.currentTarget.src = 'https://placehold.co/180x180/383434/FFFFFF?text=P'} /> : <CardIcon><ListMusic size={48} /></CardIcon>}
+            <CardTitle>{playlist.name}</CardTitle>
+          </LibraryLinkCard>
+        ))}
+        <LibraryButtonCard onClick={() => setIsCreateModalOpen(true)}>
+          <CardIcon><PlusCircle size={48} /></CardIcon>
+          <CardTitle>Create Playlist</CardTitle>
+        </LibraryButtonCard>
+      </GridContainer>
+    );
+  };
+
+  const renderFollowedArtists = () => {
+    if (artistsStatus === 'loading') return <Message>Loading followed artists...</Message>;
+    if (artistsStatus === 'error') return <Message>Could not load your followed artists.</Message>;
+    if (!Array.isArray(followedArtists) || followedArtists.length === 0) {
+        return <Message>You are not following any artists yet.</Message>;
+    }
+    return (
+      <GridContainer>
+        {followedArtists.map(artist => (
+            <LibraryLinkCard key={artist.id} href={`/discover/artist/${artist.id}`}>
+                <ArtistArtwork src={artist.artwork} alt={artist.name} onError={(e) => e.currentTarget.src = 'https://placehold.co/120x120/383434/FFFFFF?text=A'}/>
+                <CardTitle>{artist.name}</CardTitle>
+            </LibraryLinkCard>
+        ))}
+      </GridContainer>
+    );
+  };
+
   return (
     <>
       <Head>
-        <title>My Library - Waveform</title>
+        <title>My Library - WaveForum.org</title>
       </Head>
       <Container>
         <PageTitle>My Library</PageTitle>
 
-        {fetchStatus === 'loading' && <Message>Loading your library...</Message>}
-        {fetchStatus === 'error' && <Message>Could not load your library.</Message>}
-        
-        {fetchStatus === 'success' && (
+        {authLoading ? (
+            <Message>Loading your library...</Message>
+        ) : (
           <>
             <SectionTitle>Playlists</SectionTitle>
-            <GridContainer>
-              <LibraryLinkCard href="/library/likes">
-                <CardIcon><Heart size={48} /></CardIcon>
-                <CardTitle>Liked Songs</CardTitle>
-              </LibraryLinkCard>
-              {playlists.map(playlist => (
-                <LibraryLinkCard key={playlist.id} href={`/library/playlist/${playlist.id}`}>
-                  {playlist.artwork ? <PlaylistArtwork src={playlist.artwork} alt={playlist.name} /> : <CardIcon><ListMusic size={48} /></CardIcon>}
-                  <CardTitle>{playlist.name}</CardTitle>
-                </LibraryLinkCard>
-              ))}
-              <LibraryButtonCard onClick={() => setIsCreateModalOpen(true)}>
-                <CardIcon><PlusCircle size={48} /></CardIcon>
-                <CardTitle>Create Playlist</CardTitle>
-              </LibraryButtonCard>
-            </GridContainer>
+            {renderPlaylists()}
 
             <SectionTitle>Followed Artists</SectionTitle>
-            {followedArtists.length > 0 ? (
-                <GridContainer>
-                    {followedArtists.map(artist => (
-                        <LibraryLinkCard key={artist.id} href={`/discover/artist/${artist.id}`}>
-                            <ArtistArtwork src={artist.artwork} alt={artist.name} />
-                            <CardTitle>{artist.name}</CardTitle>
-                        </LibraryLinkCard>
-                    ))}
-                </GridContainer>
-            ) : (
-                <Message>You are not following any artists yet.</Message>
-            )}
+            {renderFollowedArtists()}
           </>
         )}
       </Container>
