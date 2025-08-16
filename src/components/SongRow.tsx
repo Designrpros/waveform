@@ -1,3 +1,4 @@
+// src/components/SongRow.tsx
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -231,18 +232,22 @@ export const SongRow: React.FC<SongRowProps> = ({ track, queue, isInitiallyLiked
     setIsMoreMenuOpen(false);
   };
 
-  // Corrected: Replaced 'Function' with a specific type '() => void'
   const stopPropagationAnd = (fn: () => void) => (e: React.MouseEvent) => {
     e.stopPropagation();
     fn();
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = `https://placehold.co/50x50/383434/F9FAFB?text=${track.title.substring(0,1)}`;
   };
 
   return (
     <>
       <SongRowContainer $isPlaying={isThisTrackPlaying} onClick={handlePlayPause}>
         <Artwork 
-          src={track.artwork || `https://placehold.co/50x50/383434/F9FAFB?text=${track.title.substring(0,1)}`} 
+          src={track.artwork} 
           alt={track.title} 
+          onError={handleImageError}
         />
         <Info>
           <Title>{track.title}</Title>
@@ -282,7 +287,7 @@ export const SongRow: React.FC<SongRowProps> = ({ track, queue, isInitiallyLiked
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <CloseButton onClick={() => setIsModalOpen(false)}><X /></CloseButton>
             <ModalTitle>License Information</ModalTitle>
-            {track.licensing === 'proprietary' ? ( <ModalText> This track is released under a <strong>Proprietary License</strong>. All rights are reserved by the artist and Waveform.ink. </ModalText> ) : ( <ModalText> This track is licensed under the{' '} <ModalLink href={`https://creativecommons.org/licenses/${track.cc_type?.toLowerCase()}/4.0`} target="_blank" rel="noopener noreferrer"> Creative Commons {`CC ${track.cc_type?.toUpperCase()}`} 4.0 </ModalLink> {' '}license. </ModalText> )}
+            {track.licensing === 'proprietary' ? ( <ModalText> This track is released under a <strong>Proprietary License</strong>. All rights are reserved by the artist and WaveForum.org. </ModalText> ) : ( <ModalText> This track is licensed under the{' '} <ModalLink href={`https://creativecommons.org/licenses/${track.cc_type?.toLowerCase()}/4.0`} target="_blank" rel="noopener noreferrer"> Creative Commons {`CC ${track.cc_type?.toUpperCase()}`} 4.0 </ModalLink> {' '}license. </ModalText> )}
           </ModalContent>
         </ModalOverlay>
       )}

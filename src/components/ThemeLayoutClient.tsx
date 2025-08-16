@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import styled, { createGlobalStyle, ThemeProvider, DefaultTheme } from 'styled-components';
+import { usePathname } from 'next/navigation'; // Import usePathname
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { PlayerProvider } from '../context/PlayerContext';
@@ -49,10 +50,26 @@ const PageWrapper = styled.div`
   &::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-image: ${({ theme }) => theme.backgroundImage}; background-size: cover; background-position: center; opacity: ${({ theme }) => theme.imageOpacity}; z-index: -2; transition: opacity 0.5s ease; }
 `;
 
+// *** THIS IS THE NEW DYNAMIC MAIN COMPONENT ***
+const Main = styled.main<{ $isFullWidth: boolean }>`
+    flex-grow: 1;
+    width: 100%;
+    ${({ $isFullWidth }) => !$isFullWidth && `
+        max-width: 1024px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    `}
+`;
 
 export function ThemeLayoutClient({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [hasMounted, setHasMounted] = useState(false);
+  const pathname = usePathname(); // Get the current path
+
+  // Determine if the current page should be full-width
+  const isFullWidthPage = pathname.startsWith('/discover');
 
   useEffect(() => {
     setHasMounted(true);
@@ -78,9 +95,9 @@ export function ThemeLayoutClient({ children }: { children: React.ReactNode }) {
           <GlobalStyle />
           <PageWrapper>
             <Header currentThemeName={theme} toggleTheme={toggleTheme} />
-            <main style={{ flexGrow: 1 }}>
+            <Main $isFullWidth={isFullWidthPage}>
               {children}
-            </main>
+            </Main>
             <Footer />
           </PageWrapper>
           <GlobalPlayer />

@@ -100,6 +100,10 @@ const ArtistDetailPage = () => {
     fetchArtistData();
   }, [artistId, user]);
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = `https://placehold.co/180x180/383434/F9FAFB?text=${artist?.artist_name.substring(0,1) || 'A'}`;
+  };
+
   if (loading) return <Container><Message>Loading artist...</Message></Container>;
   if (!artist) return <Container><Message>Artist not found.</Message></Container>;
 
@@ -107,7 +111,7 @@ const ArtistDetailPage = () => {
     <Container>
       <BackButton href="/discover/artist"><ChevronLeft size={20} /> All Artists</BackButton>
       <Header>
-        <ArtistArtwork src={artist.artwork} alt={artist.artist_name} />
+        <ArtistArtwork src={artist.artwork} alt={artist.artist_name} onError={handleImageError}/>
         <div>
           <ArtistName>{artist.artist_name}</ArtistName>
           {artist.bio && <ArtistBio>{artist.bio}</ArtistBio>}

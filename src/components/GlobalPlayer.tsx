@@ -14,7 +14,7 @@ function formatTime(seconds: number) {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
-// --- Styled Components (All definitions are now included) ---
+// --- Styled Components ---
 const marqueeAnimation = keyframes`
   0% { transform: translateX(0); }
   15% { transform: translateX(0); }
@@ -32,12 +32,15 @@ const MarqueeText = styled.p<{ $isExpanded?: boolean }>`
   font-weight: 600; color: ${({ theme }) => theme.text}; margin: 0;
   font-size: ${({ $isExpanded }) => ($isExpanded ? '2rem' : '1rem')};
 `;
-const WaveformCanvas = styled.canvas`
+const WaveformContainer = styled.div` 
   width: 100%; height: 60px; cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 `;
 const PlayerContainer = styled.div<{ $isExpanded: boolean }>`
   position: fixed; bottom: 0; left: 0; width: 100%;
-  height: ${({ $isExpanded }) => ($isExpanded ? '100dvh' : '80px')}; // Use dvh for mobile viewport
+  height: ${({ $isExpanded }) => ($isExpanded ? '100dvh' : '80px')};
   background-color: ${({ theme }) => theme.cardBg};
   border-top: 1px solid ${({ theme }) => theme.borderColor};
   z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
@@ -184,54 +187,31 @@ MemoizedMarquee.displayName = 'Marquee';
 
 const MemoizedWaveform: React.FC = memo(() => {
     const { waveformSamples, trackProgress, duration, seek } = usePlayer();
-    const canvasRef = useRef<HTMLCanvasElement>(null);
     const theme = useTheme();
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0) return;
-        
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        context.scale(dpr, dpr);
-
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
-        const barWidth = 2;
-        const gap = 2;
-        const numBars = Math.floor(width / (barWidth + gap));
-        
-        context.clearRect(0, 0, width, height);
-        if (waveformSamples.length === 0) return;
-
-        const step = waveformSamples.length / numBars;
-        for (let i = 0; i < numBars; i++) {
-            const sampleIndex = Math.floor(i * step);
-            const sample = waveformSamples[sampleIndex] || 0;
-            const x = i * (barWidth + gap);
-            const barHeight = Math.max(1, sample * height);
-            const y = (height - barHeight) / 2;
-            const progress = duration > 0 ? trackProgress / duration : 0;
-            context.fillStyle = (x / width < progress) ? theme.accentColor : theme.subtleText;
-            context.fillRect(x, y, barWidth, barHeight);
-        }
-    }, [waveformSamples, trackProgress, duration, theme]);
-
-    const handleSeek = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        const canvas = e.currentTarget;
-        const rect = canvas.getBoundingClientRect();
+    const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const rect = container.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const seekRatio = clickX / rect.width;
         seek(duration * seekRatio);
     };
 
-    return <WaveformCanvas ref={canvasRef} onClick={handleSeek} />;
+    const progress = duration > 0 ? (trackProgress / duration) * 100 : 0;
+
+    return (
+        <WaveformContainer ref={containerRef} onClick={handleSeek}>
+            {waveformSamples.map((sample, i) => (
+                <div key={i} style={{
+                    flex: '1',
+                    height: `${Math.max(1, sample * 100)}%`,
+                    backgroundColor: (i / waveformSamples.length * 100) < progress ? theme.accentColor : theme.subtleText,
+                    borderRadius: '1px'
+                }} />
+            ))}
+        </WaveformContainer>
+    );
 });
 MemoizedWaveform.displayName = 'Waveform';
 
@@ -242,6 +222,10 @@ export const GlobalPlayer = () => {
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeView, setActiveView] = useState<'player' | 'queue'>('player');
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = '/assets/WaveForm.jpeg';
+  };
 
   if (!player.currentTrack) return null;
 
@@ -265,7 +249,7 @@ export const GlobalPlayer = () => {
       {isExpanded ? (
         <ExpandedSheet $offsetY={0} $view={activeView}>
             <PlayerView $isActive={activeView === 'player'}>
-              <Artwork $isExpanded={true} src={player.currentTrack.artwork || '/assets/WaveForm.jpeg'} alt="Track artwork" />
+              <Artwork $isExpanded={true} src={player.currentTrack.artwork} alt="Track artwork" onError={handleImageError} />
               <TextInfo $isExpanded={true}>
                 <MemoizedMarquee text={player.currentTrack.title} isExpanded={isExpanded} />
                 <Artist $isExpanded={true}>{player.currentTrack.artist}</Artist>
@@ -306,7 +290,7 @@ export const GlobalPlayer = () => {
                             $isCurrent={track.id === player.currentTrack?.id}
                             onClick={() => player.playTrack(track, player.playbackQueue)}
                         >
-                            <QueueArtwork src={track.artwork || '/assets/WaveForm.jpeg'} />
+                            <QueueArtwork src={track.artwork} onError={handleImageError}/>
                             <div>
                                 <p style={{fontWeight: 600, margin: 0}}>{track.title}</p>
                                 <p style={{fontSize: '0.8rem', color: theme.subtleText, margin: 0}}>{track.artist}</p>
@@ -322,7 +306,7 @@ export const GlobalPlayer = () => {
       ) : (
         <MiniPlayerBar onClick={() => setIsExpanded(true)}>
           <TrackInfo>
-            <Artwork src={player.currentTrack.artwork || '/assets/WaveForm.jpeg'} alt="Track artwork" />
+            <Artwork src={player.currentTrack.artwork} alt="Track artwork" onError={handleImageError}/>
             <TextInfo>
               <MemoizedMarquee text={player.currentTrack.title} />
               <Artist>{player.currentTrack.artist}</Artist>

@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 // --- Styled Components (no changes) ---
 const StyledFooter = styled.footer`
+  background-color: ${({ theme }) => theme.cardBg};
   border-top: 1px solid ${({ theme }) => theme.borderColor};
 `;
 

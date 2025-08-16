@@ -1,6 +1,7 @@
+// src/app/discover/album/[albumId]/page.tsx
 "use client";
 
-import React, { useState, useEffect } from 'react'; // Corrected: Import hooks from 'react'
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'next/navigation';
 import { SongRow, TrackForQueue } from '../../../../components/SongRow';
@@ -99,13 +100,11 @@ const AlbumPage = () => {
       setLoading(true);
 
       try {
-        // Fetch album details
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/album/${albumId}`);
         if (!response.ok) throw new Error(`Album API error: ${response.status}`);
         const data: Album = await response.json();
         setAlbum(data);
 
-        // Create the full queue required by SongRow and PlayerContext
         const queue: TrackForQueue[] = data.tracks.map(t => ({
           id: t.id,
           title: t.title,
@@ -117,14 +116,12 @@ const AlbumPage = () => {
         }));
         setPlaybackQueue(queue);
 
-        // If user is logged in, fetch their liked tracks
         if (user) {
           const idToken = await user.getIdToken();
           const likesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
             headers: { 'Authorization': `Bearer ${idToken}` }
           });
           if (likesResponse.ok) {
-            // Corrected: Add type for likedTracks parameter
             const likedTracks: { id: string }[] = await likesResponse.json();
             setLikedTrackIds(new Set(likedTracks.map((track: { id: string }) => track.id)));
           }
@@ -139,13 +136,17 @@ const AlbumPage = () => {
     fetchAlbumData();
   }, [albumId, user]);
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = `https://placehold.co/200x200/383434/F9FAFB?text=${album?.title.substring(0,1) || 'A'}`;
+  };
+
   if (loading) return <Container><Message>Loading album...</Message></Container>;
   if (!album) return <Container><Message>Album not found.</Message></Container>;
 
   return (
     <Container>
       <Header>
-        <Artwork src={album.artwork} alt={`${album.title} artwork`} />
+        <Artwork src={album.artwork} alt={`${album.title} artwork`} onError={handleImageError} />
         <AlbumInfo>
           <AlbumTitle>{album.title}</AlbumTitle>
           <ArtistName>{album.artistName}</ArtistName>

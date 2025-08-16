@@ -44,32 +44,38 @@ const LikedSongsPage: NextPage = () => {
   const [fetchStatus, setFetchStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
   useEffect(() => {
-    // Wait until the initial authentication check is complete.
     if (loading) {
       setFetchStatus('loading');
       return;
     }
 
-    // If auth check is done and there's no user, redirect to login.
     if (!user) {
       router.push('/login');
       return;
     }
 
-    // If we have a user, proceed to fetch their liked tracks.
     const fetchLikedTracks = async () => {
       setFetchStatus('loading');
+      let response: Response | undefined;
       try {
         const idToken = await user.getIdToken();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
+        response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me/likes/tracks`, {
           headers: { 'Authorization': `Bearer ${idToken}` }
         });
-        if (!response.ok) throw new Error('Failed to fetch liked tracks.');
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
         const data = await response.json();
         setLikedTracks(data);
         setFetchStatus('success');
       } catch (error) {
-        console.error(error);
+        console.error("--- DEBUG: Fetch Liked Tracks FAILED ---");
+        if (response) {
+          console.error(`Backend responded with Status: ${response.status} ${response.statusText}`);
+          const responseBody = await response.text();
+          console.error("Backend Response Body:", responseBody);
+        }
+        console.error("Caught error object:", error);
         setFetchStatus('error');
       }
     };
@@ -79,7 +85,7 @@ const LikedSongsPage: NextPage = () => {
 
   const renderContent = () => {
     if (fetchStatus === 'loading') return <Message>Loading your liked songs...</Message>;
-    if (fetchStatus === 'error') return <Message>Could not load liked tracks. Please try again.</Message>;
+    if (fetchStatus === 'error') return <Message>Could not load liked tracks. Please check the console for details.</Message>;
     if (likedTracks.length === 0) return <Message>You haven&apos;t liked any tracks yet.</Message>;
     
     return (
@@ -99,7 +105,7 @@ const LikedSongsPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Liked Songs - Waveform</title>
+        <title>Liked Songs - WaveForum.org</title>
       </Head>
       <Container>
         <BackButton href="/library"><ChevronLeft size={20} /> Back to Library</BackButton>
