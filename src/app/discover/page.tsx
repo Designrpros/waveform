@@ -1,58 +1,564 @@
 // src/app/discover/page.tsx
 "use client";
 
+import type { NextPage } from 'next';
+import Head from 'next/head';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, ChevronRight, X, Music, PlayCircle, Heart, Play, Pause, Users, Disc3, ListMusic, TrendingUp, Star } from 'lucide-react';
+import styled from 'styled-components';
+import { Search, ChevronRight, X, Music, PlayCircle, Star, TrendingUp, User, Users, Disc3, ListMusic, Play, Pause, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { usePlayer } from '../../context/PlayerContext';
 import { TrackForQueue } from '../../components/SongRow';
 
-// Type definitions
-interface Genre {
-  id: number;
-  name: string;
-  color: string;
-}
-
-interface Artist {
-  id: string;
-  name: string;
-  artwork: string;
-  followers: number;
-}
-
-interface Album {
-  id: string;
-  title: string;
-  artist: string;
-  artwork: string;
-  year: number;
-}
-
-interface Playlist {
-  id: string;
-  name: string;
-  description: string;
-  artwork: string;
-  tracks: number;
-  creatorName: string;
-}
-
-interface SearchResults {
-  tracks: TrackForQueue[];
-  artists: Artist[];
-  albums: Album[];
-  playlists: Playlist[];
-}
-
+// --- Type Definitions ---
+interface Genre { id: number; name: string; color: string; }
+interface Artist { id: string; name: string; artwork: string; followers: number; }
+interface Album { id: string; title: string; artist: string; artwork: string; year: number; }
+interface Playlist { id: string; name: string; description: string; artwork: string; tracks: number; creatorName: string; }
+interface SearchResults { tracks: TrackForQueue[]; artists: Artist[]; albums: Album[]; playlists: Playlist[]; }
 type TrackFromApi = Omit<TrackForQueue, 'licensing'>;
 
+// --- Styled Components ---
 
-const DiscoverPage = () => {
+const PageWrapper = styled.div`
+  min-height: 100vh;
+  background: ${({ theme }) => theme.body};
+  color: ${({ theme }) => theme.text};
+`;
+
+const HeroSection = styled.section<{ $bgImage?: string }>`
+  position: relative;
+  overflow: hidden;
+  background-image: url(${({ $bgImage }) => $bgImage || 'none'});
+  background-color: #1a1a1a;
+  background-size: cover;
+  background-position: center;
+  color: white;
+`;
+
+const HeroOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.6) 70%, transparent);
+`;
+
+const HeroContent = styled.div`
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  padding: 4rem 2rem;
+`;
+
+const PageTitle = styled.h1`
+  font-size: 2.5rem;
+  font-weight: 800;
+`;
+
+const PageSubtitle = styled.p`
+    color: #D1D5DB;
+    font-size: 1.25rem;
+    margin-top: 0.25rem;
+    margin-bottom: 2rem;
+`;
+
+const SearchBarContainer = styled.div`
+  position: relative;
+  max-width: 48rem;
+`;
+
+const SearchInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: rgba(30, 30, 30, 0.5);
+  border-radius: 9999px;
+  border: 1px solid #4B5563;
+  transition: all 0.2s;
+  &:focus-within {
+    border-color: #a855f7;
+  }
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  background: transparent;
+  padding: 1rem 1rem 1rem 3.5rem;
+  font-size: 1.125rem;
+  color: white;
+  &::placeholder {
+    color: #9CA3AF;
+  }
+  &:focus {
+    outline: none;
+  }
+`;
+
+const SearchIcon = styled(Search)`
+  position: absolute;
+  left: 1.25rem;
+  color: #9CA3AF;
+`;
+
+const ClearSearchButton = styled.button`
+  margin-right: 1rem;
+  padding: 0.5rem;
+  color: #9CA3AF;
+  &:hover {
+    color: white;
+  }
+`;
+
+const FeaturedContent = styled.div`
+    margin-top: 4rem;
+`;
+
+const HeroTag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+`;
+
+const HeroTitle = styled.h2`
+  font-size: 3.75rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+`;
+
+const HeroDescription = styled.p`
+  font-size: 1.25rem;
+  color: #D1D5DB;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+`;
+
+const HeroActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const HeroButton = styled.button`
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+
+  &.primary {
+    background: ${({ theme }) => theme.accentGradient};
+    color: white;
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  &.secondary {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+`;
+
+
+const ContentContainer = styled.div`
+  max-width: 100%;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+`;
+
+const SectionTitleStyled = styled.h2`
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const ViewAllLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: ${({ theme }) => theme.accentColor};
+  text-decoration: none;
+  &:hover {
+    color: ${({ theme }) => theme.text};
+  }
+`;
+
+const GenreGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+`;
+
+const TrackGrid = styled.div`
+  background-color: ${({ theme }) => theme.cardBg};
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid ${({ theme }) => theme.borderColor};
+`;
+
+const ArtistGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 2rem;
+`;
+
+const AlbumGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+`;
+
+const Message = styled.div`
+    padding: 2rem;
+    text-align: center;
+    color: ${({ theme }) => theme.subtleText};
+`;
+
+const SearchResultsGrid = styled.div`
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+`;
+
+const SearchResultCategory = styled.section`
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+`;
+
+const SearchResultCategoryTitle = styled.h2`
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+`;
+
+const GenreCardStyled = styled.div<{ color: string }>`
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 120px;
+    background-color: ${props => props.color};
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(0,0,0,0.2));
+    }
+    
+    .content {
+        position: relative;
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .title {
+        color: white;
+        font-weight: 700;
+        font-size: 1.125rem;
+        text-align: center;
+        transition: transform 0.3s;
+    }
+
+    &:hover .title {
+        transform: scale(1.1);
+    }
+`;
+
+const ArtistCardStyled = styled.div`
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    .image-wrapper {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    img {
+        width: 160px;
+        height: 160px;
+        border-radius: 9999px;
+        object-fit: cover;
+        margin-left: auto;
+        margin-right: auto;
+        border: 4px solid ${({ theme }) => theme.borderColor};
+        transition: all 0.3s;
+    }
+
+    &:hover img {
+        border-color: ${({ theme }) => theme.accentColor};
+    }
+
+    h3 {
+        font-weight: 600;
+        color: ${({ theme }) => theme.text};
+        transition: color 0.2s;
+    }
+    
+    &:hover h3 {
+        color: ${({ theme }) => theme.accentColor};
+    }
+`;
+
+const AlbumCardStyled = styled.div`
+    cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    .image-wrapper {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 0.75rem;
+        object-fit: cover;
+    }
+
+    h3 {
+        font-weight: 600;
+        color: ${({ theme }) => theme.text};
+        transition: color 0.2s;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    p {
+        color: ${({ theme }) => theme.subtleText};
+        font-size: 0.875rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &:hover h3 {
+        color: ${({ theme }) => theme.accentColor};
+    }
+`;
+
+const PlaylistCardStyled = styled(AlbumCardStyled)``;
+
+const TrackRowStyled = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    
+    &:hover {
+        background-color: ${({ theme }) => theme.buttonHoverBg};
+    }
+
+    .info-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .image-wrapper {
+        position: relative;
+    }
+
+    img {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.5rem;
+        object-fit: cover;
+    }
+
+    .play-button {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0,0,0,0.6);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.2s;
+    }
+
+    &:hover .play-button {
+        opacity: 1;
+    }
+
+    .text-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+
+    h4 {
+        font-weight: 600;
+        color: ${({ theme }) => theme.text};
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    p {
+        color: ${({ theme }) => theme.subtleText};
+        font-size: 0.875rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .like-button {
+        padding: 0.5rem;
+        border-radius: 9999px;
+        transition: all 0.2s;
+    }
+`;
+
+// --- Reusable Cards ---
+const GenreCard = React.memo<{ genre: Genre }>(({ genre }) => (
+    <Link href={`/discover/genre/${genre.id}`} passHref>
+        <GenreCardStyled color={genre.color}>
+            <div className="overlay" />
+            <div className="content">
+                <h3 className="title">{genre.name}</h3>
+            </div>
+        </GenreCardStyled>
+    </Link>
+));
+GenreCard.displayName = 'GenreCard';
+
+const ArtistCard = React.memo<{ artist: Artist }>(({ artist }) => (
+    <Link href={`/discover/artist/${artist.id}`} passHref>
+        <ArtistCardStyled>
+            <div className="image-wrapper">
+                <img src={artist.artwork} alt={artist.name} onError={(e) => { e.currentTarget.src = `https://placehold.co/160x160/1F2937/FFFFFF?text=${artist.name[0]}` }} />
+            </div>
+            <h3>{artist.name}</h3>
+        </ArtistCardStyled>
+    </Link>
+));
+ArtistCard.displayName = 'ArtistCard';
+
+const AlbumCard = React.memo<{ album: Album }>(({ album }) => (
+    <Link href={`/discover/album/${album.id}`} passHref>
+        <AlbumCardStyled>
+            <div className="image-wrapper">
+                <img src={album.artwork} alt={album.title} onError={(e) => { e.currentTarget.src = `https://placehold.co/250x250/1F2937/FFFFFF?text=${album.title[0]}` }} />
+            </div>
+            <h3>{album.title}</h3>
+            <p>{album.artist}</p>
+        </AlbumCardStyled>
+    </Link>
+));
+AlbumCard.displayName = 'AlbumCard';
+
+const PlaylistCard = React.memo<{ playlist: Playlist }>(({ playlist }) => (
+    <Link href={`/discover/playlist/${playlist.id}`} passHref>
+        <PlaylistCardStyled>
+            <div className="image-wrapper">
+                <img src={playlist.artwork} alt={playlist.name} onError={(e) => { e.currentTarget.src = `https://placehold.co/280x280/1F2937/FFFFFF?text=${playlist.name[0]}` }} />
+            </div>
+            <h3>{playlist.name}</h3>
+            <p>{playlist.creatorName}</p>
+        </PlaylistCardStyled>
+    </Link>
+));
+PlaylistCard.displayName = 'PlaylistCard';
+
+const TrackRow = React.memo<{ track: TrackForQueue }>(({ track }) => {
+    const { playTrack, currentTrack, isPlaying, togglePlayPause } = usePlayer();
+    const [liked, setLiked] = useState(false);
+
+    const handlePlayPause = () => {
+        if (currentTrack?.id === track.id) {
+            togglePlayPause();
+        } else {
+            playTrack(track, [track]);
+        }
+    };
+
+    return (
+        <TrackRowStyled>
+            <div className="info-wrapper">
+                <div className="image-wrapper">
+                    <img src={track.artwork} alt={track.title} onError={(e) => { e.currentTarget.src = `https://placehold.co/48x48/6366f1/ffffff?text=${track.title[0]}` }} />
+                    <button onClick={handlePlayPause} className="play-button" aria-label={isPlaying && currentTrack?.id === track.id ? 'Pause' : 'Play'}>
+                        {isPlaying && currentTrack?.id === track.id ? <Pause size={16} color="white" /> : <Play size={16} color="white" style={{ marginLeft: '2px' }} />}
+                    </button>
+                </div>
+                <div className="text-wrapper">
+                    <h4>{track.title}</h4>
+                    <p>{track.artist}</p>
+                </div>
+            </div>
+            <div className="actions">
+                <button onClick={() => setLiked(!liked)} className="like-button" style={{ color: liked ? '#ef4444' : '#9CA3AF' }} aria-label={liked ? 'Unlike' : 'Like'}>
+                    <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
+                </button>
+            </div>
+        </TrackRowStyled>
+    );
+});
+TrackRow.displayName = 'TrackRow';
+
+
+const DiscoverPage: NextPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [likedTracks, setLikedTracks] = useState(new Set<string>());
   
   const [topGenres, setTopGenres] = useState<Genre[]>([]);
   const [trendingSongs, setTrendingSongs] = useState<TrackForQueue[]>([]);
@@ -60,8 +566,10 @@ const DiscoverPage = () => {
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
   const [curatedPlaylists, setCuratedPlaylists] = useState<Playlist[]>([]);
   
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { playTrack, currentTrack, isPlaying, togglePlayPause } = usePlayer();
+  const { playTrack } = usePlayer();
 
   const generateColor = (genreName: string) => {
     const genreColors = ['#6366f1', '#ef4444', '#f59e0b', '#10b981', '#ec4899', '#8b5cf6'];
@@ -74,6 +582,7 @@ const DiscoverPage = () => {
 
   useEffect(() => {
     const fetchDiscoverData = async () => {
+      setStatus('loading');
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
       try {
         const [tracksRes, playlistsRes, genresRes, artistsRes, albumsRes] = await Promise.all([
@@ -96,8 +605,10 @@ const DiscoverPage = () => {
         if (artistsRes.ok) setPopularArtists(await artistsRes.json());
         if (albumsRes.ok) setTopAlbums(await albumsRes.json());
         
+        setStatus('success');
       } catch (error) {
         console.error("Error fetching discover data:", error);
+        setStatus('error');
       }
     };
     fetchDiscoverData();
@@ -133,204 +644,128 @@ const DiscoverPage = () => {
     }, 500);
   }, []);
 
-  const toggleLike = useCallback((trackId: string) => {
-    setLikedTracks(prev => {
-      const newLiked = new Set(prev);
-      if (newLiked.has(trackId)) newLiked.delete(trackId);
-      else newLiked.add(trackId);
-      return newLiked;
-    });
-  }, []);
-
-  const handlePlayPause = useCallback((track: TrackForQueue) => {
-    if (currentTrack?.id === track.id) {
-        togglePlayPause();
-    } else {
-        const queue = searchResults?.tracks.length ? searchResults.tracks : trendingSongs || [];
-        playTrack(track, queue);
+  const handlePlayPlaylist = async (playlistId: string) => {
+    if (!playlistId) return;
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${playlistId}`);
+      if (!response.ok) throw new Error('Could not fetch playlist tracks.');
+      const playlistData: { tracks: TrackForQueue[] } = await response.json();
+      if (playlistData.tracks && playlistData.tracks.length > 0) {
+        playTrack(playlistData.tracks[0], playlistData.tracks);
+      } else {
+        alert("This playlist is empty!");
+      }
+    } catch (error) {
+      console.error("Failed to play playlist:", error);
+      alert("Could not start playback for this playlist.");
     }
-  }, [currentTrack, playTrack, searchResults, trendingSongs, togglePlayPause]);
+  };
 
   const clearSearch = useCallback(() => handleSearch(''), [handleSearch]);
-
-  const GenreCard = React.memo<{ genre: Genre }>(({ genre }) => (
-    <Link href={`/discover/genre/${genre.id}`} passHref>
-        <div className="group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl" style={{ backgroundColor: genre.color, minHeight: '120px' }}>
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-black/20" />
-            <div className="relative p-6 h-full flex items-center justify-center">
-                <h3 className="text-white font-bold text-lg text-center group-hover:scale-110 transition-transform duration-300">{genre.name}</h3>
-            </div>
-        </div>
-    </Link>
-  ));
-  GenreCard.displayName = 'GenreCard';
-
-  const TrackRow = React.memo<{ track: TrackForQueue }>(({ track }) => (
-    <div className="group flex items-center gap-4 p-4 rounded-lg hover:bg-gray-900/50 transition-all duration-200">
-      <div className="flex items-center gap-4 flex-1">
-        <div className="relative">
-          <img src={track.artwork} alt={track.title} className="w-12 h-12 rounded-lg object-cover" loading="lazy" onError={(e) => { e.currentTarget.src = `https://placehold.co/48x48/6366f1/ffffff?text=${track.title[0]}` }} />
-          <button onClick={() => handlePlayPause(track)} className="absolute inset-0 bg-black/60 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200" aria-label={isPlaying && currentTrack?.id === track.id ? 'Pause' : 'Play'}>
-            {isPlaying && currentTrack?.id === track.id ? <Pause size={16} className="text-white" /> : <Play size={16} className="text-white ml-0.5" />}
-          </button>
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-white truncate">{track.title}</h4>
-          <p className="text-gray-400 text-sm truncate">{track.artist}</p>
-        </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <button onClick={() => toggleLike(track.id)} className={`p-2 rounded-full transition-all duration-200 ${likedTracks.has(track.id) ? 'text-red-500 hover:text-red-400' : 'text-gray-400 hover:text-white'}`} aria-label={likedTracks.has(track.id) ? 'Unlike' : 'Like'}>
-          <Heart size={18} fill={likedTracks.has(track.id) ? 'currentColor' : 'none'} />
-        </button>
-      </div>
-    </div>
-  ));
-  TrackRow.displayName = 'TrackRow';
-
-  const ArtistCard = React.memo<{ artist: Artist }>(({ artist }) => (
-    <Link href={`/discover/artist/${artist.id}`} passHref>
-        <div className="group text-center cursor-pointer transition-all duration-300 hover:scale-105">
-        <div className="relative mb-4">
-            <img src={artist.artwork} alt={artist.name} className="w-40 h-40 rounded-full object-cover mx-auto border-4 border-gray-800 group-hover:border-purple-500 transition-all duration-300" loading="lazy" onError={(e) => { e.currentTarget.src = `https://placehold.co/160x160/1F2937/FFFFFF?text=${artist.name[0]}` }} />
-        </div>
-        <h3 className="font-semibold text-white group-hover:text-purple-400 transition-colors duration-200">{artist.name}</h3>
-        </div>
-    </Link>
-  ));
-  ArtistCard.displayName = 'ArtistCard';
-
-  const AlbumCard = React.memo<{ album: Album }>(({ album }) => (
-    <Link href={`/discover/album/${album.id}`} passHref>
-        <div className="group cursor-pointer transition-all duration-300 hover:scale-105">
-        <div className="relative mb-4">
-            <img src={album.artwork} alt={album.title} className="w-full aspect-square rounded-xl object-cover" loading="lazy" onError={(e) => { e.currentTarget.src = `https://placehold.co/250x250/1F2937/FFFFFF?text=${album.title[0]}` }} />
-        </div>
-        <h3 className="font-semibold text-white group-hover:text-purple-400 transition-colors duration-200 truncate">{album.title}</h3>
-        <p className="text-gray-400 text-sm truncate">{album.artist}</p>
-        </div>
-    </Link>
-  ));
-  AlbumCard.displayName = 'AlbumCard';
-
-  const PlaylistCard = React.memo<{ playlist: Playlist }>(({ playlist }) => (
-    <Link href={`/discover/playlist/${playlist.id}`} passHref>
-        <div className="group cursor-pointer transition-all duration-300 hover:scale-105">
-        <div className="relative mb-4">
-            <img src={playlist.artwork} alt={playlist.name} className="w-full aspect-square rounded-xl object-cover" loading="lazy" onError={(e) => { e.currentTarget.src = `https://placehold.co/280x280/1F2937/FFFFFF?text=${playlist.name[0]}` }} />
-        </div>
-        <h3 className="font-semibold text-white group-hover:text-green-400 transition-colors duration-200 truncate">{playlist.name}</h3>
-        <p className="text-gray-400 text-sm truncate">{playlist.creatorName}</p>
-        </div>
-    </Link>
-  ));
-  PlaylistCard.displayName = 'PlaylistCard';
 
   const featuredPlaylist = curatedPlaylists?.[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
-      <div className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-gray-800">
-        <div className="max-w-full px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                Discover Music
-              </h1>
-              <p className="text-gray-400 text-lg mt-1">Explore a world of independent sound</p>
-            </div>
-          </div>
-          <div className="relative max-w-2xl mx-auto">
-            <div className="relative flex items-center bg-gray-800/50 rounded-full border border-gray-700 focus-within:border-purple-500 transition-all duration-200">
-              <Search className="ml-6 text-gray-400" size={20} />
-              <input type="text" placeholder="Search songs, artists, albums, or playlists..." value={searchQuery} onChange={(e) => handleSearch(e.target.value)} className="flex-1 bg-transparent px-4 py-4 text-lg text-white placeholder-gray-400 focus:outline-none" />
-              {searchQuery && (<button onClick={clearSearch} className="mr-4 p-2 text-gray-400 hover:text-white transition-colors duration-200"><X size={20} /></button>)}
-            </div>
-          </div>
-        </div>
-      </div>
+    <>
+      <Head>
+        <title>Discover Music - WaveForum.org</title>
+        <meta name="description" content="Discover unique and independent music on WaveForum.org." />
+      </Head>
+      <PageWrapper>
+        {searchQuery ? (
+          <SearchResultsGrid>
+            {isSearching ? (
+              <Message><div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" />Searching...</Message>
+            ) : searchResults ? (
+              <>
+                {searchResults.tracks.length > 0 && (
+                  <SearchResultCategory>
+                    <SearchResultCategoryTitle><Music color="#a855f7" />Tracks</SearchResultCategoryTitle>
+                    <div>{searchResults.tracks.map((track) => (<TrackRow key={track.id} track={track} />))}</div>
+                  </SearchResultCategory>
+                )}
+                {searchResults.artists.length > 0 && (
+                  <SearchResultCategory>
+                    <SearchResultCategoryTitle><Users color="#3b82f6" />Artists</SearchResultCategoryTitle>
+                    <ArtistGrid>{searchResults.artists.map(artist => (<ArtistCard key={artist.id} artist={artist} />))}</ArtistGrid>
+                  </SearchResultCategory>
+                )}
+                {searchResults.albums.length > 0 && (
+                  <SearchResultCategory>
+                    <SearchResultCategoryTitle><Disc3 color="#22c55e" />Albums</SearchResultCategoryTitle>
+                    <AlbumGrid>{searchResults.albums.map(album => (<AlbumCard key={album.id} album={album} />))}</AlbumGrid>
+                  </SearchResultCategory>
+                )}
+                {searchResults.playlists.length > 0 && (
+                  <SearchResultCategory>
+                    <SearchResultCategoryTitle><ListMusic color="#ec4899" />Playlists</SearchResultCategoryTitle>
+                    <AlbumGrid>{searchResults.playlists.map(playlist => (<PlaylistCard key={playlist.id} playlist={playlist} />))}</AlbumGrid>
+                  </SearchResultCategory>
+                )}
+              </>
+            ) : (
+              <Message>No results found for "{searchQuery}"</Message>
+            )}
+          </SearchResultsGrid>
+        ) : (
+          <>
+            <HeroSection $bgImage={featuredPlaylist?.artwork}>
+                <HeroOverlay />
+                <HeroContent>
+                    <div>
+                        <PageTitle>Discover Music</PageTitle>
+                        <PageSubtitle>Explore a world of independent sound</PageSubtitle>
+                        <SearchBarContainer>
+                            <SearchInputWrapper>
+                                <SearchIcon size={20} />
+                                <SearchInput type="text" placeholder="Search songs, artists, albums, or playlists..." value={searchQuery} onChange={(e) => handleSearch(e.target.value)} />
+                                {searchQuery && (<ClearSearchButton onClick={clearSearch} aria-label="Clear search"><X size={20} /></ClearSearchButton>)}
+                            </SearchInputWrapper>
+                        </SearchBarContainer>
+                        {featuredPlaylist && (
+                            <FeaturedContent>
+                                <HeroTag><Star size={16} /> FEATURED PLAYLIST</HeroTag>
+                                <HeroTitle>{featuredPlaylist.name}</HeroTitle>
+                                <HeroDescription>{featuredPlaylist.description}</HeroDescription>
+                                <HeroActions>
+                                <HeroButton className="primary" onClick={() => handlePlayPlaylist(featuredPlaylist.id)}><PlayCircle size={24} />Listen Now</HeroButton>
+                                <HeroButton as={Link} href={`/discover/playlist/${featuredPlaylist.id}`} className="secondary">View Playlist</HeroButton>
+                                </HeroActions>
+                            </FeaturedContent>
+                        )}
+                    </div>
+                </HeroContent>
+            </HeroSection>
 
-      {searchQuery ? (
-        <div className="px-8 py-8">
-          {isSearching ? (
-            <div className="text-center py-20"><div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div><p className="text-gray-400">Searching...</p></div>
-          ) : searchResults ? (
-            <div className="space-y-12">
-              {searchResults.tracks.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6"><Music className="text-purple-500" size={24} /><h2 className="text-2xl font-bold">Tracks</h2></div>
-                  <div className="grid gap-2">{searchResults.tracks.map((track) => (<TrackRow key={track.id} track={track} />))}</div>
-                </section>
-              )}
-              {searchResults.artists.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6"><Users className="text-blue-500" size={24} /><h2 className="text-2xl font-bold">Artists</h2></div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">{searchResults.artists.map(artist => (<ArtistCard key={artist.id} artist={artist} />))}</div>
-                </section>
-              )}
-              {searchResults.albums.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6"><Disc3 className="text-green-500" size={24} /><h2 className="text-2xl font-bold">Albums</h2></div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">{searchResults.albums.map(album => (<AlbumCard key={album.id} album={album} />))}</div>
-                </section>
-              )}
-              {searchResults.playlists.length > 0 && (
-                <section>
-                  <div className="flex items-center gap-3 mb-6"><ListMusic className="text-pink-500" size={24} /><h2 className="text-2xl font-bold">Playlists</h2></div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">{searchResults.playlists.map(playlist => (<PlaylistCard key={playlist.id} playlist={playlist} />))}</div>
-                </section>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-20"><Music className="w-16 h-16 text-gray-600 mx-auto mb-4" /><p className="text-gray-400 text-lg">No results found for &quot;{searchQuery}&quot;</p></div>
-          )}
-        </div>
-      ) : (
-        <>
-          {featuredPlaylist && (
-            <div className="relative h-[60vh] overflow-hidden">
-              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${featuredPlaylist.artwork})` }} />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
-              <div className="relative h-full flex items-center px-8">
-                <div className="max-w-2xl">
-                  <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-400 px-4 py-2 rounded-full text-sm font-semibold mb-4"><Star size={16} />FEATURED PLAYLIST</div>
-                  <h2 className="text-6xl font-bold mb-4">{featuredPlaylist.name}</h2>
-                  <p className="text-xl text-gray-300 mb-8 leading-relaxed">{featuredPlaylist.description}</p>
-                  <div className="flex items-center gap-4">
-                    <Link href={`/discover/playlist/${featuredPlaylist.id}`} passHref>
-                        <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-4 rounded-full flex items-center gap-3 text-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-2xl"><PlayCircle size={24} />Listen Now</button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="px-8 py-12 space-y-16">
-            <section>
-              <div className="flex items-center justify-between mb-8"><h2 className="text-3xl font-bold">Top Genres</h2><Link href="/discover/genre" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200">View All<ChevronRight size={20} /></Link></div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">{topGenres.map(genre => (<GenreCard key={genre.id} genre={genre} />))}</div>
-            </section>
-            <section>
-              <div className="flex items-center justify-between mb-8"><div className="flex items-center gap-3"><TrendingUp className="text-red-500" size={28} /><h2 className="text-3xl font-bold">Trending Tracks</h2></div><Link href="/discover/track" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200">View All<ChevronRight size={20} /></Link></div>
-              <div className="bg-gray-900/30 rounded-2xl p-6 backdrop-blur-sm border border-gray-800"><div className="space-y-2">{trendingSongs.map((track) => <TrackRow key={track.id} track={track} />)}</div></div>
-            </section>
-            <section>
-              <div className="flex items-center justify-between mb-8"><div className="flex items-center gap-3"><Users className="text-blue-500" size={28} /><h2 className="text-3xl font-bold">Popular Artists</h2></div><Link href="/discover/artist" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200">View All<ChevronRight size={20} /></Link></div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-8">{popularArtists.map(artist => (<ArtistCard key={artist.id} artist={artist} />))}</div>
-            </section>
-            <section>
-              <div className="flex items-center justify-between mb-8"><div className="flex items-center gap-3"><Disc3 className="text-green-500" size={28} /><h2 className="text-3xl font-bold">Top Albums</h2></div><Link href="/discover/album" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200">View All<ChevronRight size={20} /></Link></div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">{topAlbums.map(album => (<AlbumCard key={album.id} album={album} />))}</div>
-            </section>
-            <section>
-              <div className="flex items-center justify-between mb-8"><div className="flex items-center gap-3"><ListMusic className="text-pink-500" size={28} /><h2 className="text-3xl font-bold">Curated Playlists</h2></div><Link href="/discover/public-playlists" className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200">View All<ChevronRight size={20} /></Link></div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">{curatedPlaylists.map(playlist => (<PlaylistCard key={playlist.id} playlist={playlist} />))}</div>
-            </section>
-          </div>
-        </>
-      )}
-    </div>
+            <ContentContainer>
+              <section>
+                <SectionHeader>
+                    <SectionTitleStyled>Top Genres</SectionTitleStyled>
+                    <ViewAllLink href="/discover/genre"><ChevronRight size={20} /></ViewAllLink>
+                </SectionHeader>
+                {topGenres && topGenres.length > 0 ? <GenreGrid>{topGenres.map(genre => <GenreCard key={genre.id} genre={genre} />)}</GenreGrid> : <Message>No genres available.</Message>}
+              </section>
+              <section>
+                <SectionHeader><SectionTitleStyled><TrendingUp /> Trending Tracks</SectionTitleStyled><ViewAllLink href="/discover/track"><ChevronRight size={20} /></ViewAllLink></SectionHeader>
+                {trendingSongs && trendingSongs.length > 0 ? <TrackGrid>{trendingSongs.map((track) => <TrackRow key={track.id} track={track} />)}</TrackGrid> : <Message>No trending tracks available.</Message>}
+              </section>
+              <section>
+                <SectionHeader><SectionTitleStyled><Star /> Hot Selections</SectionTitleStyled><ViewAllLink href="/discover/public-playlists"><ChevronRight size={20} /></ViewAllLink></SectionHeader>
+                {curatedPlaylists && curatedPlaylists.length > 0 ? <AlbumGrid>{curatedPlaylists.map(playlist => <PlaylistCard key={playlist.id} playlist={playlist} />)}</AlbumGrid> : <Message>No curated playlists available.</Message>}
+              </section>
+              <section>
+                <SectionHeader><SectionTitleStyled><Users /> Popular Artists</SectionTitleStyled><ViewAllLink href="/discover/artist"><ChevronRight size={20} /></ViewAllLink></SectionHeader>
+                {popularArtists && popularArtists.length > 0 ? <ArtistGrid>{popularArtists.map(artist => <ArtistCard key={artist.id} artist={artist} />)}</ArtistGrid> : <Message>No popular artists available.</Message>}
+              </section>
+              <section>
+                <SectionHeader><SectionTitleStyled><Disc3 /> Top Albums</SectionTitleStyled><ViewAllLink href="/discover/album"><ChevronRight size={20} /></ViewAllLink></SectionHeader>
+                {topAlbums && topAlbums.length > 0 ? <AlbumGrid>{topAlbums.map(album => <AlbumCard key={album.id} album={album} />)}</AlbumGrid> : <Message>No top albums available.</Message>}
+              </section>
+            </ContentContainer>
+          </>
+        )}
+      </PageWrapper>
+    </>
   );
 };
 
