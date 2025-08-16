@@ -1,3 +1,4 @@
+// src/context/PlayerContext.tsx
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
@@ -35,17 +36,14 @@ interface PlayerContextType {
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
-// Define a type for the window object to include the vendor-prefixed AudioContext
 interface WindowWithAudioContext extends Window {
   webkitAudioContext: typeof AudioContext;
 }
 
-// --- Web Audio API Helper ---
 const analyzeAudio = async (audioPath: string): Promise<number[]> => {
   try {
     if (typeof window === 'undefined') return Array(200).fill(0.1);
     
-    // Corrected: Cast to 'unknown' first for type safety
     const audioContext = new (window.AudioContext || (window as unknown as WindowWithAudioContext).webkitAudioContext)();
     const response = await fetch(audioPath);
     const arrayBuffer = await response.arrayBuffer();
@@ -169,8 +167,7 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     }
     setCurrentTrack(track);
     try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        void fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/track/${track.id}/play`, { method: 'POST' });
+        fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/track/${track.id}/play`, { method: 'POST' });
     } catch (error) { console.warn("Could not update play count:", error); }
   }, [isShuffling]);
 

@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import StyledComponentsRegistry from "./lib/registry";
 import { ThemeLayoutClient } from '../components/ThemeLayoutClient';
+import Script from "next/script"; // Import the Script component
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,8 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head>
-        {/* ADD THIS SCRIPT FOR TAILWIND CSS */}
-        <script src="https://cdn.tailwindcss.com"></script>
+        {/* The synchronous script has been removed from here */}
       </head>
       <body className={inter.className}>
         <StyledComponentsRegistry>
@@ -29,6 +29,8 @@ export default function RootLayout({
             {children}
           </ThemeLayoutClient>
         </StyledComponentsRegistry>
+        {/* Add the Tailwind CSS script here using the Next.js Script component */}
+        <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
       </body>
     </html>
   );
