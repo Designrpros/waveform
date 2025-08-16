@@ -704,7 +704,7 @@ const DiscoverPage: NextPage = () => {
                 )}
               </>
             ) : (
-              <Message>No results found for "{searchQuery}"</Message>
+              <Message>No results found for &quot;{searchQuery}&quot;</Message>
             )}
           </SearchResultsGrid>
         ) : (
@@ -739,10 +739,7 @@ const DiscoverPage: NextPage = () => {
 
             <ContentContainer>
               <section>
-                <SectionHeader>
-                    <SectionTitleStyled>Top Genres</SectionTitleStyled>
-                    <ViewAllLink href="/discover/genre"><ChevronRight size={20} /></ViewAllLink>
-                </SectionHeader>
+                <SectionHeader><SectionTitleStyled>Top Genres</SectionTitleStyled><ViewAllLink href="/discover/genre"><ChevronRight size={20} /> View All</ViewAllLink></SectionHeader>
                 {topGenres && topGenres.length > 0 ? <GenreGrid>{topGenres.map(genre => <GenreCard key={genre.id} genre={genre} />)}</GenreGrid> : <Message>No genres available.</Message>}
               </section>
               <section>
